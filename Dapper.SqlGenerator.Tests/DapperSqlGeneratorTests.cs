@@ -1,16 +1,16 @@
 using System.Data;
-using Dapper.SqlExtensions.Adapters;
+using Dapper.SqlGenerator.Adapters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Dapper.SqlExtensions.Tests
+namespace Dapper.SqlGenerator.Tests
 {
     [TestClass]
-    public class DapperSqlExtensionsTests
+    public class DapperSqlGeneratorTests
     {
         [TestInitialize]
         public void Init()
         {
-            DapperSqlExtensions
+            DapperSqlGenerator
                 .Configure()
                 .HasDefaultIdColumn("Id", o => o.HasColumnName("id"))
                 .Entity<Product>(e =>

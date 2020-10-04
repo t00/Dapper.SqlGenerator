@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dapper.SqlExtensions\Dapper.SqlExtensions.csproj" />
+    <ProjectReference Include="..\Dapper.SqlGenerator\Dapper.SqlGenerator.csproj" />
   </ItemGroup>
 
 </Project>

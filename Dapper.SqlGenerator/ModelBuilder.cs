@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Text;
 
-namespace Dapper.SqlExtensions
+namespace Dapper.SqlGenerator
 {
     public class ModelBuilder
     {

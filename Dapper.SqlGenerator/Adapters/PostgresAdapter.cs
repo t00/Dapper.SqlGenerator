@@ -1,4 +1,4 @@
-namespace Dapper.SqlExtensions.Adapters
+namespace Dapper.SqlGenerator.Adapters
 {
     public class PostgresAdapter : GenericSqlAdapter
     {

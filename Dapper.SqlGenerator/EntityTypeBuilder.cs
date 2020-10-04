@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Dapper.SqlExtensions
+namespace Dapper.SqlGenerator
 {
     public class EntityTypeBuilder
     {

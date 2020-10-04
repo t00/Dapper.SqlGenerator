@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlExtensions", "Dapper.SqlExtensions\Dapper.SqlExtensions.csproj", "{F2E4BA11-040D-4C1C-AC4B-F7EE309E13E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlGenerator", "Dapper.SqlGenerator\Dapper.SqlGenerator.csproj", "{F2E4BA11-040D-4C1C-AC4B-F7EE309E13E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlExtensions.Tests", "Dapper.SqlExtensions.Tests\Dapper.SqlExtensions.Tests.csproj", "{E14DE66C-2BE0-4DF1-A1DB-AB641F6252A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlGenerator.Tests", "Dapper.SqlGenerator.Tests\Dapper.SqlGenerator.Tests.csproj", "{E14DE66C-2BE0-4DF1-A1DB-AB641F6252A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

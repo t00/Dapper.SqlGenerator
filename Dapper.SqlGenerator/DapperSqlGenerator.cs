@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Data;
 
-namespace Dapper.SqlExtensions
+namespace Dapper.SqlGenerator
 {
-    public static class DapperSqlExtensions
+    public static class DapperSqlGenerator
     {
         private static readonly ConcurrentDictionary<string, ModelBuilder> Options = new ConcurrentDictionary<string, ModelBuilder>();
         

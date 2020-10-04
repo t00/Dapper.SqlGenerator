@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Dapper.SqlExtensions.Adapters
+namespace Dapper.SqlGenerator.Adapters
 {
     public class SqlServerAdapter : ISqlAdapter
     {

@@ -1,4 +1,4 @@
-namespace Dapper.SqlExtensions
+namespace Dapper.SqlGenerator
 {
     public class PropertyBuilder
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Dapper.SqlExtensions
+namespace Dapper.SqlGenerator
 {
     [Flags]
     public enum ColumnSelection

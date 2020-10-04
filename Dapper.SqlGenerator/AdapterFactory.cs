@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Data;
-using Dapper.SqlExtensions.Adapters;
+using Dapper.SqlGenerator.Adapters;
 
-namespace Dapper.SqlExtensions
+namespace Dapper.SqlGenerator
 {
     public static class AdapterFactory
     {
