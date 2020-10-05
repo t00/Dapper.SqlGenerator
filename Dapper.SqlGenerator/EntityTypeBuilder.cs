@@ -10,14 +10,7 @@ namespace Dapper.SqlGenerator
     {
         private string tableName;
         
-        protected ModelBuilder ModelBuilder { get; }
-        
         internal ConcurrentDictionary<string, ConcurrentDictionary<Type, PropertyBuilder>> ColumnsDict { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<Type, PropertyBuilder>>();
-
-        public EntityTypeBuilder(ModelBuilder modelBuilder)
-        {
-            this.ModelBuilder = modelBuilder;
-        }
 
         public EntityTypeBuilder ToTable(string name)
         {
@@ -44,11 +37,7 @@ namespace Dapper.SqlGenerator
 
     public class EntityTypeBuilder<TEntity> : EntityTypeBuilder
     {
-        public EntityTypeBuilder(ModelBuilder modelBuilder) : base(modelBuilder)
-        {
-        }
-
-        public IEnumerable<PropertyBuilder> GetProperties(ColumnSelection selection)
+        public IEnumerable<PropertyBuilder> GetProperties(ModelBuilder modelBuilder, ColumnSelection selection)
         {
             var props = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
             foreach (var prop in props)
@@ -57,7 +46,7 @@ namespace Dapper.SqlGenerator
                 {
                     yield return custom;
                 }
-                else if (FindColumn(ModelBuilder.Shared, prop.Name, out var shared))
+                else if (FindColumn(modelBuilder.Shared, prop.Name, out var shared))
                 {
                     yield return shared;
                 }
@@ -78,7 +67,7 @@ namespace Dapper.SqlGenerator
                     return false;
                 }
                 
-                var adapterType = ModelBuilder.Adapter.GetType();
+                var adapterType = modelBuilder.Adapter.GetType();
                 if (custom.TryGetValue(adapterType, out property))
                 {
                     return true;

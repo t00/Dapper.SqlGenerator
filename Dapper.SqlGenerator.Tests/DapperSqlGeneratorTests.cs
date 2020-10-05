@@ -41,15 +41,15 @@ namespace Dapper.SqlGenerator.Tests
         {
             var pgConnection = new NpgsqlConnection();
             var cols = pgConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.All);
-            Assert.AreEqual("\"id\",\"Type\",\"Content\",\"Id\" + 1 AS \"Value\"", cols);
+            Assert.AreEqual("\"id\" AS \"Id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\"", cols);
         }
 
         [TestMethod]
         public void TestGetColumnsProductSqlServer()
         {
-            var sqlConnection = new SqlServerConnection();
+            var sqlConnection = new SqlConnection();
             var cols = sqlConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.All);
-            Assert.AreEqual("[id],[Type],[Content],[Id] + 1 AS [Value]", cols);
+            Assert.AreEqual("[id] AS [Id],[Type] AS [Kind],[Content],[Id] + 1 AS [Value]", cols);
         }
 
         [TestMethod]
@@ -63,9 +63,9 @@ namespace Dapper.SqlGenerator.Tests
         [TestMethod]
         public void TestGetColumnsOrderSqlServer()
         {
-            var pgConnection = new NpgsqlConnection();
+            var pgConnection = new SqlConnection();
             var cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.All);
-            Assert.AreEqual("[OrderId] AS [Id],[ProductId],[Count]", cols);
+            Assert.AreEqual("[Id] AS [OrderId],[ProductId],[Count]", cols);
         }
 
         private class Product
@@ -90,7 +90,7 @@ namespace Dapper.SqlGenerator.Tests
             public int Count { get; set; }
         }
 
-        private class SqlServerConnection : IDbConnection
+        private class SqlConnection : IDbConnection
         {
             public void Dispose()
             {

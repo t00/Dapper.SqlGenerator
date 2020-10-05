@@ -8,10 +8,10 @@ namespace Dapper.SqlGenerator.Adapters
         /// Adds the name of a column.
         /// </summary>
         /// <param name="sb">The string builder to append to.</param>
-        /// <param name="property">The property name.</param>
-        public void AppendColumn(StringBuilder sb, PropertyBuilder property)
+        /// <param name="name">The property name.</param>
+        public void EscapeColumnName(StringBuilder sb, string name)
         {
-            sb.AppendFormat("\"{0}\"", property.ColumnName ?? property.Name);
+            sb.AppendFormat("\"{0}\"", name);
         }
     }
 }

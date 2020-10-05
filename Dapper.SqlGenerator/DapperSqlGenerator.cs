@@ -19,7 +19,7 @@ namespace Dapper.SqlGenerator
 
         private static ModelBuilder EnsureAdapter(IDbConnection connection)
         {
-            var builder = Options.GetOrAdd(connection.ConnectionString, _ => Options.TryGetValue(string.Empty, out var defaultBuilder) ? defaultBuilder : new ModelBuilder());
+            var builder = Options.GetOrAdd(connection.ConnectionString, _ => Options.TryGetValue(string.Empty, out var defaultBuilder) ? new ModelBuilder(defaultBuilder) : new ModelBuilder());
             if (builder.Adapter == null)
             {
                 builder.Adapter = AdapterFactory.GetAdapter(connection);
