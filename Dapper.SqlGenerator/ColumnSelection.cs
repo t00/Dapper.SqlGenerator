@@ -5,8 +5,8 @@ namespace Dapper.SqlGenerator
     [Flags]
     public enum ColumnSelection
     {
-        Keys,
-        NonKeys,
+        Keys = 0x01,
+        NonKeys = 0x02,
         All = Keys | NonKeys
     }
 }

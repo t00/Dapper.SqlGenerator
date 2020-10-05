@@ -33,9 +33,10 @@ namespace Dapper.SqlGenerator
             return this;
         }
 
-        public ModelBuilder HasDefaultIdColumn(string propertyName, Action<PropertyBuilder> options = null, Type adapter = null)
+        public ModelBuilder HasDefaultKeyColumn(string propertyName, Action<PropertyBuilder> options = null, Type adapter = null)
         {
             var property = Shared.Property(propertyName, adapter);
+            property.IsKey = true;
             options?.Invoke(property);
             return this;
         }
