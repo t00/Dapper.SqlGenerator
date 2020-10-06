@@ -40,11 +40,11 @@ namespace Dapper.SqlGenerator.Tests
         public void TestGetColumnsProductPostgres()
         {
             var pgConnection = new NpgsqlConnection();
-            var cols = pgConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.All);
+            var cols = pgConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.Select);
             Assert.AreEqual("\"id\" AS \"Id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\"", cols);
             cols = pgConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.Keys);
             Assert.AreEqual("\"id\" AS \"Id\"", cols, "Keys");
-            cols = pgConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.NonKeys);
+            cols = pgConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.NonKeys | ColumnSelection.Computed);
             Assert.AreEqual("\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\"", cols, "NonKeys");
         }
 
@@ -52,11 +52,11 @@ namespace Dapper.SqlGenerator.Tests
         public void TestGetColumnsProductSqlServer()
         {
             var sqlConnection = new SqlConnection();
-            var cols = sqlConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.All);
+            var cols = sqlConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.Select);
             Assert.AreEqual("[id] AS [Id],[Type] AS [Kind],[Content],[Id] + 1 AS [Value]", cols);
             cols = sqlConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.Keys);
             Assert.AreEqual("[id] AS [Id]", cols, "Keys");
-            cols = sqlConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.NonKeys);
+            cols = sqlConnection.SqlBuilder().GetColumns<Product>(ColumnSelection.NonKeys | ColumnSelection.Computed);
             Assert.AreEqual("[Type] AS [Kind],[Content],[Id] + 1 AS [Value]", cols, "NonKeys");
         }
 
@@ -64,11 +64,11 @@ namespace Dapper.SqlGenerator.Tests
         public void TestGetColumnsOrderPostgres()
         {
             var pgConnection = new NpgsqlConnection();
-            var cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.All);
+            var cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.Select);
             Assert.AreEqual("\"Id\" AS \"OrderId\",\"ProductId\",\"Count\"", cols);
             cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.Keys);
             Assert.AreEqual("\"Id\" AS \"OrderId\"", cols, "Keys");
-            cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.NonKeys);
+            cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.NonKeys | ColumnSelection.Computed);
             Assert.AreEqual("\"ProductId\",\"Count\"", cols, "NonKeys");
         }
 
@@ -76,12 +76,52 @@ namespace Dapper.SqlGenerator.Tests
         public void TestGetColumnsOrderSqlServer()
         {
             var pgConnection = new SqlConnection();
-            var cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.All);
+            var cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.Select);
             Assert.AreEqual("[Id] AS [OrderId],[ProductId],[Count]", cols);
             cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.Keys);
             Assert.AreEqual("[Id] AS [OrderId]", cols, "Keys");
-            cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.NonKeys);
+            cols = pgConnection.SqlBuilder().GetColumns<Order>(ColumnSelection.NonKeys | ColumnSelection.Computed);
             Assert.AreEqual("[ProductId],[Count]", cols, "NonKeys");
+        }
+
+        [TestMethod]
+        public void TestGetColumnEqualParamProductPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Update);
+            Assert.AreEqual("\"id\"=@Id,\"Type\"=@Kind,\"Content\"=CAST(@Content AS json)", cols);
+            cols = pgConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Keys);
+            Assert.AreEqual("\"id\"=@Id", cols, "Keys");
+            cols = pgConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.NonKeys);
+            Assert.AreEqual("\"Type\"=@Kind,\"Content\"=CAST(@Content AS json)", cols, "NonKeys");
+        }
+
+        [TestMethod]
+        public void TestGetColumnEqualParamSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Update);
+            Assert.AreEqual("[id]=@Id,[Type]=@Kind,[Content]=@Content", cols);
+            cols = sqlConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Keys);
+            Assert.AreEqual("[id]=@Id", cols, "Keys");
+            cols = sqlConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.NonKeys);
+            Assert.AreEqual("[Type]=@Kind,[Content]=@Content", cols, "NonKeys");
+        }
+
+        [TestMethod]
+        public void TestInsertPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.SqlBuilder().Insert<Product>();
+            Assert.AreEqual("INSERT INTO \"Products\" (\"Type\",\"Content\") VALUES(@Kind,CAST(@Content AS json))", cols);
+        }
+
+        [TestMethod]
+        public void TestInsertSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.SqlBuilder().Insert<Product>();
+            Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) VALUES(@Kind,@Content)", cols);
         }
 
         private class Product

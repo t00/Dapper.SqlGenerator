@@ -7,6 +7,9 @@ namespace Dapper.SqlGenerator
     {
         Keys = 0x01,
         NonKeys = 0x02,
-        All = Keys | NonKeys
+        Computed = 0x04,
+        Select = Keys | NonKeys | Computed,
+        Insert = Keys | NonKeys,
+        Update = Keys | NonKeys
     }
 }

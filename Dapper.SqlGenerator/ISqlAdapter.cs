@@ -10,5 +10,12 @@ namespace Dapper.SqlGenerator
         /// <param name="sb">The string builder to append to.</param>
         /// <param name="name">The property name.</param>
         void EscapeColumnName(StringBuilder sb, string name);
+
+        /// <summary>
+        /// Escape table name
+        /// </summary>
+        /// <param name="name">Table name</param>
+        /// <returns>Escaped table name</returns>
+        string EscapeTableName(string name);
     }
 }

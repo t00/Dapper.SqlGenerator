@@ -8,20 +8,20 @@ namespace Dapper.SqlGenerator
 {
     public class EntityTypeBuilder
     {
-        private string tableName;
+        public string TableName { get; protected set; }
         
-        internal ConcurrentDictionary<string, ConcurrentDictionary<Type, PropertyBuilder>> ColumnsDict { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<Type, PropertyBuilder>>();
+        internal ConcurrentDictionary<string, (PropertyBuilder shared, ConcurrentDictionary<Type, PropertyBuilder> adapters)> ColumnsDict { get; } = new ConcurrentDictionary<string, (PropertyBuilder, ConcurrentDictionary<Type, PropertyBuilder>)>();
 
         public EntityTypeBuilder ToTable(string name)
         {
-            tableName = name;
+            TableName = name;
             return this;
         }
 
         public PropertyBuilder Property(string name, Type adapter = null)
         {
-            var values = ColumnsDict.GetOrAdd(name, _ => new ConcurrentDictionary<Type, PropertyBuilder>());
-            return values.GetOrAdd(adapter ?? typeof(object), _ => new PropertyBuilder(name));
+            var (shared, adapters) = ColumnsDict.GetOrAdd(name, _ => (new PropertyBuilder(name), new ConcurrentDictionary<Type, PropertyBuilder>()));
+            return adapter == null ? shared : adapters.GetOrAdd(adapter, _ => new PropertyBuilder(name) { IsKey = shared.IsKey });
         }
 
         public EntityTypeBuilder HasKey(params string[] names)
@@ -37,7 +37,12 @@ namespace Dapper.SqlGenerator
 
     public class EntityTypeBuilder<TEntity> : EntityTypeBuilder
     {
-        public IEnumerable<PropertyBuilder> GetProperties(ModelBuilder modelBuilder, ColumnSelection selection)
+        public EntityTypeBuilder()
+        {
+            TableName = nameof(TEntity);
+        }
+        
+        public IEnumerable<PropertyBuilder> GetProperties(ModelBuilder modelBuilder)
         {
             var props = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
             foreach (var prop in props)
@@ -68,17 +73,13 @@ namespace Dapper.SqlGenerator
                 }
                 
                 var adapterType = modelBuilder.Adapter.GetType();
-                if (custom.TryGetValue(adapterType, out property))
+                if (custom.adapters.TryGetValue(adapterType, out property))
                 {
                     return true;
                 }
 
-                if (custom.TryGetValue(typeof(object), out property))
-                {
-                    return true;
-                }
-
-                return false;
+                property = custom.shared;
+                return true;
             }
         }
         
