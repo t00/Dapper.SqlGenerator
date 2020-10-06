@@ -88,7 +88,7 @@ namespace Dapper.SqlGenerator.Tests
         public void TestGetColumnEqualParamProductPostgres()
         {
             var pgConnection = new NpgsqlConnection();
-            var cols = pgConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Update);
+            var cols = pgConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Keys | ColumnSelection.NonKeys);
             Assert.AreEqual("\"id\"=@Id,\"Type\"=@Kind,\"Content\"=CAST(@Content AS json)", cols);
             cols = pgConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Keys);
             Assert.AreEqual("\"id\"=@Id", cols, "Keys");
@@ -100,7 +100,7 @@ namespace Dapper.SqlGenerator.Tests
         public void TestGetColumnEqualParamSqlServer()
         {
             var sqlConnection = new SqlConnection();
-            var cols = sqlConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Update);
+            var cols = sqlConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Keys | ColumnSelection.NonKeys);
             Assert.AreEqual("[id]=@Id,[Type]=@Kind,[Content]=@Content", cols);
             cols = sqlConnection.SqlBuilder().GetColumnEqualParams<Product>(ColumnSelection.Keys);
             Assert.AreEqual("[id]=@Id", cols, "Keys");
@@ -113,7 +113,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var pgConnection = new NpgsqlConnection();
             var cols = pgConnection.SqlBuilder().Insert<Product>();
-            Assert.AreEqual("INSERT INTO \"Products\" (\"Type\",\"Content\") VALUES(@Kind,CAST(@Content AS json))", cols);
+            Assert.AreEqual("INSERT INTO \"Products\" (\"Type\",\"Content\") VALUES (@Kind,CAST(@Content AS json))", cols);
         }
 
         [TestMethod]
@@ -121,7 +121,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var sqlConnection = new SqlConnection();
             var cols = sqlConnection.SqlBuilder().Insert<Product>();
-            Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) VALUES(@Kind,@Content)", cols);
+            Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) VALUES (@Kind,@Content)", cols);
         }
 
         private class Product

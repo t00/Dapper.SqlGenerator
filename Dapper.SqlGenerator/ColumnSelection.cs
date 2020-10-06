@@ -5,11 +5,11 @@ namespace Dapper.SqlGenerator
     [Flags]
     public enum ColumnSelection
     {
+        None = 0x00,
         Keys = 0x01,
         NonKeys = 0x02,
         Computed = 0x04,
-        Select = Keys | NonKeys | Computed,
-        Insert = Keys | NonKeys,
-        Update = Keys | NonKeys
+        Write = 0x08,
+        Select = Keys | NonKeys | Computed
     }
 }

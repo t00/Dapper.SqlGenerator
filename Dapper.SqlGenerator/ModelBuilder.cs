@@ -46,7 +46,7 @@ namespace Dapper.SqlGenerator
         public string Insert<TEntity>(bool insertKeys = false)
         {
             var table = EnsureEntity<TEntity>();
-            var selection = insertKeys ? ColumnSelection.Insert : ColumnSelection.NonKeys;
+            var selection = (insertKeys ? ColumnSelection.Keys : ColumnSelection.None) | ColumnSelection.NonKeys | ColumnSelection.Write;
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ");
             sb.Append(Adapter.EscapeTableName(table.TableName));
@@ -88,14 +88,21 @@ namespace Dapper.SqlGenerator
                     {
                         sb.Append(property.ComputedColumnSql);
                         sb.Append(" AS ");
+                        Adapter.EscapeColumnName(sb, property.Name);
                     }
                     else if (property.ColumnName != null && property.ColumnName != property.Name)
                     {
                         Adapter.EscapeColumnName(sb, property.ColumnName);
-                        sb.Append(" AS ");
+                        if (!selection.HasFlag(ColumnSelection.Write))
+                        {
+                            sb.Append(" AS ");
+                            Adapter.EscapeColumnName(sb, property.Name);
+                        }
                     }
-
-                    Adapter.EscapeColumnName(sb, property.Name);
+                    else
+                    {
+                        Adapter.EscapeColumnName(sb, property.Name);
+                    }
                 });
         }
 
@@ -105,8 +112,19 @@ namespace Dapper.SqlGenerator
                 x => IsSelected(x, selection),
                 (sb, property) =>
                 {
-                    sb.Append('@');
-                    sb.Append(property.Name);
+                    if (property.ColumnType == null || !selection.HasFlag(ColumnSelection.Write))
+                    {
+                        sb.Append('@');
+                        sb.Append(property.Name);
+                    }
+                    else
+                    {
+                        sb.Append("CAST(@");
+                        sb.Append(property.Name);
+                        sb.Append(" AS ");
+                        sb.Append(property.ColumnType);
+                        sb.Append(")");
+                    }
                 });
         }
 
