@@ -57,7 +57,7 @@ namespace Dapper.SqlGenerator.Adapters
             }
         }
         
-        protected void AddInsert<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        protected static void AddInsert<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
         {
             var selection = ColumnSelection.NonKeys | ColumnSelection.Write;
             if (insertKeys)
@@ -72,6 +72,24 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(") VALUES (");
             sb.Append(modelBuilder.GetParams<TEntity>(selection));
             sb.Append(")");
+        }
+        
+        protected static void AddUpdate<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        {
+            sb.Append("UPDATE ");
+            sb.Append(modelBuilder.Adapter.EscapeTableName(table.TableName));
+            sb.Append(" SET ");
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write));
+            sb.Append(" WHERE ");
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
+        }
+        
+        protected static void AddDelete<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        {
+            sb.Append("DELETE FROM ");
+            sb.Append(modelBuilder.Adapter.EscapeTableName(table.TableName));
+            sb.Append(" WHERE ");
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
         }
     }
 }

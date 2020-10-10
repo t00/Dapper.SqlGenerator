@@ -31,5 +31,19 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(modelBuilder.GetColumns<TEntity>(ColumnSelection.Keys));
             return sb.ToString();
         }
+
+        public virtual string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        {
+            var sb = new StringBuilder();
+            AddUpdate(sb, modelBuilder, table);
+            return sb.ToString();
+        }
+
+        public string Delete<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        {
+            var sb = new StringBuilder();
+            AddDelete(sb, modelBuilder, table);
+            return sb.ToString();
+        }
     }
 }

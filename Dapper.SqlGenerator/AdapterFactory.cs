@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using Dapper.SqlGenerator.Adapters;
@@ -16,13 +17,21 @@ namespace Dapper.SqlGenerator
             ["fbconnection"] = new GenericSqlAdapter()
         };
 
-        public static void Register(string name, ISqlAdapter adapter)
+        public static Func<IDbConnection, ISqlAdapter> AdapterLookup { get; set; }
+
+        public static void Register(Type connectionType, ISqlAdapter adapter)
         {
-            AdapterDictionary[name] = adapter;
+            var adapterKey = connectionType.Name.ToLower();
+            AdapterDictionary[adapterKey] = adapter;
         }
         
         public static ISqlAdapter GetAdapter(IDbConnection connection)
         {
+            if (AdapterLookup != null)
+            {
+                return AdapterLookup(connection);
+            }
+            
             var adapterKey = connection.GetType().Name.ToLower();
             return AdapterDictionary.TryGetValue(adapterKey, out var adapter) ? adapter : new GenericSqlAdapter();
         }

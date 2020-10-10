@@ -70,5 +70,19 @@ namespace Dapper.SqlGenerator.Adapters
 
             return sb.ToString();
         }
+
+        public string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        {
+            var sb = new StringBuilder();
+            AddUpdate(sb, modelBuilder, table);
+            return sb.ToString();
+        }
+        
+        public string Delete<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        {
+            var sb = new StringBuilder();
+            AddDelete(sb, modelBuilder, table);
+            return sb.ToString();
+        }
     }
 }

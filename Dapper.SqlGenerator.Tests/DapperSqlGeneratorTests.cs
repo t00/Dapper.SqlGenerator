@@ -140,6 +140,38 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) OUTPUT INSERTED.[id] AS [Id] VALUES (@Kind,@Content)", cols);
         }
 
+        [TestMethod]
+        public void TestUpdatePostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.Sql().Update<Product>();
+            Assert.AreEqual("UPDATE \"Products\" SET \"Type\"=@Kind,\"Content\"=CAST(@Content AS json) WHERE \"id\"=@Id", cols);
+        }
+
+        [TestMethod]
+        public void TestUpdateSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.Sql().Update<Product>();
+            Assert.AreEqual("UPDATE [Products] SET [Type]=@Kind,[Content]=@Content WHERE [id]=@Id", cols);
+        }
+
+        [TestMethod]
+        public void TestDeletePostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.Sql().Delete<Product>();
+            Assert.AreEqual("DELETE FROM \"Products\" WHERE \"id\"=@Id", cols);
+        }
+
+        [TestMethod]
+        public void TestDeleteSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.Sql().Delete<Product>();
+            Assert.AreEqual("DELETE FROM [Products] WHERE [id]=@Id", cols);
+        }
+        
         private class Product
         {
             public int Id { get; set; }

@@ -80,6 +80,24 @@ namespace Dapper.SqlGenerator
             });
         }
 
+        public string Update<TEntity>()
+        {
+            return CacheQuery<TEntity>(nameof(Update), () =>
+            {
+                var table = EnsureEntity<TEntity>();
+                return Adapter.Update(this, table);
+            });
+        }
+
+        public string Delete<TEntity>()
+        {
+            return CacheQuery<TEntity>(nameof(Delete), () =>
+            {
+                var table = EnsureEntity<TEntity>();
+                return Adapter.Delete(this, table);
+            });
+        }
+
         private string CacheQuery<TEntity>(string key, Func<string> buildFunction)
         {
             return queryCache.GetOrAdd((key, typeof(TEntity)), (_) => buildFunction());
