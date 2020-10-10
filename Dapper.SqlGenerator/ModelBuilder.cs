@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Dapper.SqlGenerator
 {
-    public class ModelBuilder
+    public partial class ModelBuilder
     {
         private readonly ConcurrentDictionary<Type, EntityTypeBuilder> tableDict;
-        private readonly ConcurrentDictionary<(Type type, ColumnSelection selection), string> columnsCache = new ConcurrentDictionary<(Type, ColumnSelection), string>();
-        private readonly ConcurrentDictionary<(Type type, ColumnSelection selection), string> paramsCache = new ConcurrentDictionary<(Type, ColumnSelection), string>();
-        private readonly ConcurrentDictionary<(Type type, ColumnSelection selection), string> columnEqualParamsCache = new ConcurrentDictionary<(Type, ColumnSelection), string>();
+        private readonly ConcurrentDictionary<(string key, Type type, ColumnSelection selection), IList<PropertyBuilder>> columnCache = new ConcurrentDictionary<(string key, Type, ColumnSelection), IList<PropertyBuilder>>();
+        private readonly ConcurrentDictionary<(string key, Type type), string> queryCache = new ConcurrentDictionary<(string key, Type type), string>();
 
         public ModelBuilder()
         {
@@ -43,137 +42,59 @@ namespace Dapper.SqlGenerator
             return this;
         }
 
-        public string Insert<TEntity>(bool insertKeys = false)
+        public IList<PropertyBuilder> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select)
         {
-            var table = EnsureEntity<TEntity>();
-            var selection = (insertKeys ? ColumnSelection.Keys : ColumnSelection.None) | ColumnSelection.NonKeys | ColumnSelection.Write;
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO ");
-            sb.Append(Adapter.EscapeTableName(table.TableName));
-            sb.Append(" (");
-            sb.Append(GetColumns<TEntity>(selection));
-            sb.Append(") VALUES (");
-            sb.Append(GetParams<TEntity>(selection));
-            sb.Append(")");
-            return sb.ToString();
+            return columnCache.GetOrAdd((nameof(GetProperties), typeof(TEntity), selection), key => SelectColumns<TEntity>(selection).ToList());
+        }
+
+        public string GetColumns<TEntity>(ColumnSelection selection)
+        {
+            return string.Join(",", GetProperties<TEntity>(selection).Select(x => Adapter.GetColumn(x, selection)).Where(x => x != null));
         }
         
-        public string GetColumns<TEntity>(ColumnSelection selection = ColumnSelection.Select)
+        public string GetParams<TEntity>(ColumnSelection selection)
         {
-            return columnsCache.GetOrAdd((typeof(TEntity), selection), key => CreateColumns<TEntity>(key.selection));
+            return string.Join(",", GetProperties<TEntity>(selection).Select(x => Adapter.GetParam(x, selection)).Where(x => x != null));
+        }
+        
+        public string GetColumnEqualParams<TEntity>(ColumnSelection selection)
+        {
+            return string.Join(",", GetProperties<TEntity>(selection).Select(x => Adapter.GetColumnEqualParam(x, selection)).Where(x => x != null));
+        }
+        
+        public string Insert<TEntity>(bool insertKeys = false)
+        {
+            return CacheQuery<TEntity>($"{nameof(Insert)}_{insertKeys}", () =>
+            {
+                var table = EnsureEntity<TEntity>();
+                return Adapter.Insert(this, table, insertKeys);
+            });
         }
 
-        public string GetParams<TEntity>(ColumnSelection selection = ColumnSelection.Select)
+        public string InsertReturn<TEntity>(bool insertKeys = false)
         {
-            return paramsCache.GetOrAdd((typeof(TEntity), selection), key => CreateParams<TEntity>(key.selection));
+            return CacheQuery<TEntity>($"{nameof(InsertReturn)}_{insertKeys}", () =>
+            {
+                var table = EnsureEntity<TEntity>();
+                return Adapter.InsertReturn(this, table, insertKeys);
+            });
         }
 
-        public string GetColumnEqualParams<TEntity>(ColumnSelection selection = ColumnSelection.Select)
+        private string CacheQuery<TEntity>(string key, Func<string> buildFunction)
         {
-            return columnEqualParamsCache.GetOrAdd((typeof(TEntity), selection), key => CreateColumnEqualParams<TEntity>(key.selection));
+            return queryCache.GetOrAdd((key, typeof(TEntity)), (_) => buildFunction());
         }
-
+        
         private EntityTypeBuilder<TEntity> EnsureEntity<TEntity>()
         {
             return (EntityTypeBuilder<TEntity>) tableDict.GetOrAdd(typeof(TEntity), _ => new EntityTypeBuilder<TEntity>());
         }
 
-        private string CreateColumns<TEntity>(ColumnSelection selection)
-        {
-            return BuildColumns<TEntity>(
-                x => IsSelected(x, selection),
-                (sb, property) =>
-                {
-                    if (property.ComputedColumnSql != null)
-                    {
-                        sb.Append(property.ComputedColumnSql);
-                        sb.Append(" AS ");
-                        Adapter.EscapeColumnName(sb, property.Name);
-                    }
-                    else if (property.ColumnName != null && property.ColumnName != property.Name)
-                    {
-                        Adapter.EscapeColumnName(sb, property.ColumnName);
-                        if (!selection.HasFlag(ColumnSelection.Write))
-                        {
-                            sb.Append(" AS ");
-                            Adapter.EscapeColumnName(sb, property.Name);
-                        }
-                    }
-                    else
-                    {
-                        Adapter.EscapeColumnName(sb, property.Name);
-                    }
-                });
-        }
-
-        private string CreateParams<TEntity>(ColumnSelection selection)
-        {
-            return BuildColumns<TEntity>(
-                x => IsSelected(x, selection),
-                (sb, property) =>
-                {
-                    if (property.ColumnType == null || !selection.HasFlag(ColumnSelection.Write))
-                    {
-                        sb.Append('@');
-                        sb.Append(property.Name);
-                    }
-                    else
-                    {
-                        sb.Append("CAST(@");
-                        sb.Append(property.Name);
-                        sb.Append(" AS ");
-                        sb.Append(property.ColumnType);
-                        sb.Append(")");
-                    }
-                });
-        }
-
-        private string CreateColumnEqualParams<TEntity>(ColumnSelection selection)
-        {
-            return BuildColumns<TEntity>(
-                x => IsSelected(x, selection),
-                (sb, property) =>
-                {
-                    Adapter.EscapeColumnName(sb, property.ColumnName ?? property.Name);
-                    if (property.ColumnType != null)
-                    {
-                        sb.Append("=CAST(@");
-                        sb.Append(property.Name);
-                        sb.Append(" AS ");
-                        sb.Append(property.ColumnType);
-                        sb.Append(")");
-                    }
-                    else
-                    {
-                        sb.Append("=@");
-                        sb.Append(property.Name);
-                    }
-                });
-        }
-
-        private string BuildColumns<TEntity>(Func<PropertyBuilder, bool> predicate, Action<StringBuilder, PropertyBuilder> columnAction)
+        private IEnumerable<PropertyBuilder> SelectColumns<TEntity>(ColumnSelection selection)
         {
             var entity = EnsureEntity<TEntity>();
             var properties = entity.GetProperties(this);
-            var sb = new StringBuilder();
-            foreach (var property in properties.Where(predicate))
-            {
-                if (sb.Length > 0)
-                {
-                    sb.Append(',');
-                }
-
-                columnAction(sb, property);
-            }
-
-            return sb.ToString();
+            return properties.Where(x => Adapter.IsSelected(x, selection));
         }
-
-        private static bool IsSelected(PropertyBuilder property, ColumnSelection selection)
-        {
-            return !property.Ignored
-                && ((property.IsKey && selection.HasFlag(ColumnSelection.Keys)) || (!property.IsKey && selection.HasFlag(ColumnSelection.NonKeys)))
-                && (property.ComputedColumnSql == null || selection.HasFlag(ColumnSelection.Computed));
-        }
-    }
+   }
 }

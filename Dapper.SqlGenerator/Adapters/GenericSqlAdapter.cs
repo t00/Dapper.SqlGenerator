@@ -2,18 +2,34 @@ using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
 {
-    public class GenericSqlAdapter : ISqlAdapter
+    public class GenericSqlAdapter : BaseSqlAdapter, ISqlAdapter
     {
-        public void EscapeColumnName(StringBuilder sb, string name)
-        {
-            // TODO: escape quotes
-            sb.Append($"\"{name}\"");
-        }
-
-        public string EscapeTableName(string name)
+        public override string EscapeColumnName(string name)
         {
             // TODO: escape quotes
             return $"\"{name}\"";
+        }
+
+        public override string EscapeTableName(string name)
+        {
+            // TODO: escape quotes
+            return $"\"{name}\"";
+        }
+
+        public virtual string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        {
+            var sb = new StringBuilder();
+            AddInsert(sb, modelBuilder, table, insertKeys);
+            return sb.ToString();
+        }
+        
+        public virtual string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        {
+            var sb = new StringBuilder();
+            AddInsert(sb, modelBuilder, table, insertKeys);
+            sb.Append(" RETURNING ");
+            sb.Append(modelBuilder.GetColumns<TEntity>(ColumnSelection.Keys));
+            return sb.ToString();
         }
     }
 }

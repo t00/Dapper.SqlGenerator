@@ -21,7 +21,7 @@ namespace Dapper.SqlGenerator
         public PropertyBuilder Property(string name, Type adapter = null)
         {
             var (shared, adapters) = ColumnsDict.GetOrAdd(name, _ => (new PropertyBuilder(name), new ConcurrentDictionary<Type, PropertyBuilder>()));
-            return adapter == null ? shared : adapters.GetOrAdd(adapter, _ => new PropertyBuilder(name) { IsKey = shared.IsKey });
+            return adapter == null ? shared : adapters.GetOrAdd(adapter, _ => new PropertyBuilder(name) { IsKey = shared.IsKey, IsNumeric = shared.IsNumeric });
         }
 
         public EntityTypeBuilder HasKey(params string[] names)
@@ -57,9 +57,11 @@ namespace Dapper.SqlGenerator
                 }
                 else
                 {
+                    var typeCode = Type.GetTypeCode(prop.PropertyType);
                     yield return new PropertyBuilder(prop.Name)
                     {
-                        ColumnName = prop.Name
+                        ColumnName = prop.Name,
+                        IsNumeric = typeCode >= TypeCode.Byte && typeCode <= TypeCode.Int64 
                     };
                 }
             }

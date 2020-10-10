@@ -2,20 +2,16 @@ using System.Text;
 
 namespace Dapper.SqlGenerator
 {
-    public interface ISqlAdapter
+    public interface ISqlAdapter : IBaseSqlAdapter
     {
         /// <summary>
-        /// Adds the name of a column.
+        /// Inserts a row and returns keys 
         /// </summary>
-        /// <param name="sb">The string builder to append to.</param>
-        /// <param name="name">The property name.</param>
-        void EscapeColumnName(StringBuilder sb, string name);
+        /// <param name="modelBuilder"></param>
+        /// <param name="table"></param>
+        /// <param name="insertKeys"></param>
+        string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys);
 
-        /// <summary>
-        /// Escape table name
-        /// </summary>
-        /// <param name="name">Table name</param>
-        /// <returns>Escaped table name</returns>
-        string EscapeTableName(string name);
+        string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys);
     }
 }

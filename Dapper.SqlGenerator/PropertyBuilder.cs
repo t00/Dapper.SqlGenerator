@@ -11,6 +11,11 @@ namespace Dapper.SqlGenerator
         
         public bool IsKey { get; set; }
         
+        /// <summary>
+        /// The column represents a numeric key (byte or any int)
+        /// </summary>
+        public bool IsNumeric { get; set; }
+        
         public string Name { get; }
         
         public string ColumnName { get; set; }
@@ -34,6 +39,12 @@ namespace Dapper.SqlGenerator
         public PropertyBuilder HasColumnType(string type)
         {
             ColumnType = type;
+            return this;
+        }
+
+        public PropertyBuilder HasNumericKey()
+        {
+            IsNumeric = true;
             return this;
         }
 
