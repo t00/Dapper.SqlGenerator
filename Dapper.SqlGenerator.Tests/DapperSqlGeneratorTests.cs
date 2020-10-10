@@ -124,6 +124,22 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) VALUES (@Kind,@Content)", cols);
         }
 
+        [TestMethod]
+        public void TestInsertReturnPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.Sql().InsertReturn<Product>();
+            Assert.AreEqual("INSERT INTO \"Products\" (\"Type\",\"Content\") VALUES (@Kind,CAST(@Content AS json)) RETURNING \"id\" AS \"Id\"", cols);
+        }
+
+        [TestMethod]
+        public void TestInsertReturnSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.Sql().InsertReturn<Product>();
+            Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) OUTPUT INSERTED.[id] AS [Id] VALUES (@Kind,@Content)", cols);
+        }
+
         private class Product
         {
             public int Id { get; set; }
