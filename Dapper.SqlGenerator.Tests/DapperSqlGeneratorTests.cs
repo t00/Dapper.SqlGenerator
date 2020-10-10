@@ -29,7 +29,7 @@ namespace Dapper.SqlGenerator.Tests
                 })
                 .Entity<Order>(e =>
                 {
-                    e.ToTable("Orders");
+                    e.ToTable("orders");
                     e.HasKey(c => c.OrderId);
                     e.Property(c => c.OrderId)
                         .HasColumnName("Id");
@@ -112,16 +112,48 @@ namespace Dapper.SqlGenerator.Tests
         public void TestInsertPostgres()
         {
             var pgConnection = new NpgsqlConnection();
-            var cols = pgConnection.Sql().Insert<Product>();
-            Assert.AreEqual("INSERT INTO \"Products\" (\"Type\",\"Content\") VALUES (@Kind,CAST(@Content AS json))", cols);
+            var insert = pgConnection.Sql().Insert<Product>();
+            Assert.AreEqual("INSERT INTO \"Products\" (\"Type\",\"Content\") VALUES (@Kind,CAST(@Content AS json))", insert);
+        }
+
+        [TestMethod]
+        public void TestInsertKeysPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var insert = pgConnection.Sql().Insert<Product>(true);
+            Assert.AreEqual("INSERT INTO \"Products\" (\"id\",\"Type\",\"Content\") VALUES (@Id,@Kind,CAST(@Content AS json))", insert);
+        }
+
+        [TestMethod]
+        public void TestInsertOrdersPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var insert = pgConnection.Sql().Insert<Order>();
+            Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count)", insert);
+        }
+
+        [TestMethod]
+        public void TestInsertOrdersKeysPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var insert = pgConnection.Sql().Insert<Order>(true);
+            Assert.AreEqual("INSERT INTO \"orders\" (\"Id\",\"ProductId\",\"Count\") VALUES (@OrderId,@ProductId,@Count)", insert);
         }
 
         [TestMethod]
         public void TestInsertSqlServer()
         {
             var sqlConnection = new SqlConnection();
-            var cols = sqlConnection.Sql().Insert<Product>();
-            Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) VALUES (@Kind,@Content)", cols);
+            var insert = sqlConnection.Sql().Insert<Product>();
+            Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) VALUES (@Kind,@Content)", insert);
+        }
+
+        [TestMethod]
+        public void TestInsertKeysSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var insert = sqlConnection.Sql().Insert<Product>(true);
+            Assert.AreEqual("INSERT INTO [Products] ([id],[Type],[Content]) VALUES (@Id,@Kind,@Content)", insert);
         }
 
         [TestMethod]
@@ -133,11 +165,27 @@ namespace Dapper.SqlGenerator.Tests
         }
 
         [TestMethod]
+        public void TestInsertKeysReturnPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.Sql().InsertReturn<Product>(true);
+            Assert.AreEqual("INSERT INTO \"Products\" (\"id\",\"Type\",\"Content\") VALUES (@Id,@Kind,CAST(@Content AS json)) RETURNING \"id\" AS \"Id\"", cols);
+        }
+
+        [TestMethod]
         public void TestInsertReturnSqlServer()
         {
             var sqlConnection = new SqlConnection();
             var cols = sqlConnection.Sql().InsertReturn<Product>();
             Assert.AreEqual("INSERT INTO [Products] ([Type],[Content]) OUTPUT INSERTED.[id] AS [Id] VALUES (@Kind,@Content)", cols);
+        }
+
+        [TestMethod]
+        public void TestInsertKeysReturnSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.Sql().InsertReturn<Product>(true);
+            Assert.AreEqual("INSERT INTO [Products] ([id],[Type],[Content]) OUTPUT INSERTED.[id] AS [Id] VALUES (@Id,@Kind,@Content)", cols);
         }
 
         [TestMethod]
@@ -149,11 +197,27 @@ namespace Dapper.SqlGenerator.Tests
         }
 
         [TestMethod]
+        public void TestUpdateOrdersPostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.Sql().Update<Order>();
+            Assert.AreEqual("UPDATE \"orders\" SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId", cols);
+        }
+
+        [TestMethod]
         public void TestUpdateSqlServer()
         {
             var sqlConnection = new SqlConnection();
             var cols = sqlConnection.Sql().Update<Product>();
             Assert.AreEqual("UPDATE [Products] SET [Type]=@Kind,[Content]=@Content WHERE [id]=@Id", cols);
+        }
+
+        [TestMethod]
+        public void TestUpdateOrdersSqlServer()
+        {
+            var pgConnection = new SqlConnection();
+            var cols = pgConnection.Sql().Update<Order>();
+            Assert.AreEqual("UPDATE [orders] SET [ProductId]=@ProductId,[Count]=@Count WHERE [Id]=@OrderId", cols);
         }
 
         [TestMethod]
