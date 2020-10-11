@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Dapper.SqlGenerator
 {
-    public partial class ModelBuilder : ISql
+    public class ModelBuilder : ISql
     {
         private readonly ConcurrentDictionary<Type, EntityTypeBuilder> tableDict;
         private readonly ConcurrentDictionary<(string key, Type type, ColumnSelection selection), IList<PropertyBuilder>> columnCache = new ConcurrentDictionary<(string key, Type, ColumnSelection), IList<PropertyBuilder>>();

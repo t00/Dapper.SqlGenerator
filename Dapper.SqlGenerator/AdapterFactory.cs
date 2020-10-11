@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Dapper.SqlGenerator.Adapters;
+using Dapper.SqlGenerator.NameConverters;
 
 namespace Dapper.SqlGenerator
 {
@@ -9,12 +10,8 @@ namespace Dapper.SqlGenerator
     {
         private static readonly Dictionary<string, ISqlAdapter> AdapterDictionary = new Dictionary<string, ISqlAdapter>(6)
         {
-            ["sqlconnection"] = new SqlServerAdapter(),
-            ["sqlceconnection"] = new GenericSqlAdapter(),
-            ["npgsqlconnection"] = new PostgresAdapter(),
-            ["sqliteconnection"] = new GenericSqlAdapter(),
-            ["mysqlconnection"] = new GenericSqlAdapter(),
-            ["fbconnection"] = new GenericSqlAdapter()
+            ["sqlconnection"] = new SqlServerAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]),
+            ["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]),
         };
 
         public static Func<IDbConnection, ISqlAdapter> AdapterLookup { get; set; }
@@ -33,7 +30,7 @@ namespace Dapper.SqlGenerator
             }
             
             var adapterKey = connection.GetType().Name.ToLower();
-            return AdapterDictionary.TryGetValue(adapterKey, out var adapter) ? adapter : new GenericSqlAdapter();
+            return AdapterDictionary.TryGetValue(adapterKey, out var adapter) ? adapter : new GenericSqlAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]);
         }
     }
 }

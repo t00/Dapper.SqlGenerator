@@ -4,15 +4,19 @@ namespace Dapper.SqlGenerator.Adapters
 {
     public class GenericSqlAdapter : BaseSqlAdapter, ISqlAdapter
     {
-        public override string EscapeColumnName(string name)
+        public GenericSqlAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters) : base(tableNameConverters, columnNameConverters)
         {
-            // TODO: escape quotes
-            return $"\"{name}\"";
         }
 
         public override string EscapeTableName(string name)
         {
-            // TODO: escape quotes
+            // TODO: escape quotes, is it even needed?
+            return $"\"{name}\"";
+        }
+
+        public override string EscapeColumnName(string name)
+        {
+            // TODO: escape quotes, is it even needed?
             return $"\"{name}\"";
         }
 

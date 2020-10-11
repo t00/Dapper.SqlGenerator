@@ -37,11 +37,6 @@ namespace Dapper.SqlGenerator
 
     public class EntityTypeBuilder<TEntity> : EntityTypeBuilder
     {
-        public EntityTypeBuilder()
-        {
-            TableName = nameof(TEntity);
-        }
-        
         public IEnumerable<PropertyBuilder> GetProperties(ModelBuilder modelBuilder)
         {
             var props = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);

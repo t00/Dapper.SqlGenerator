@@ -5,11 +5,11 @@ namespace Dapper.SqlGenerator
 {
     public static class DapperSqlGenerator
     {
-        private static readonly ConcurrentDictionary<string, ModelBuilder> Options = new ConcurrentDictionary<string, ModelBuilder>();
+        private static readonly ConcurrentDictionary<string, ModelBuilder> ModelBuilders = new ConcurrentDictionary<string, ModelBuilder>();
         
         public static ModelBuilder Configure(string connectionString = null)
         {
-            return Options.GetOrAdd(connectionString ?? string.Empty, _ => new ModelBuilder());
+            return ModelBuilders.GetOrAdd(connectionString ?? string.Empty, _ => new ModelBuilder());
         }
         
         public static ISql Sql(this IDbConnection connection)
@@ -19,7 +19,7 @@ namespace Dapper.SqlGenerator
 
         private static ModelBuilder EnsureAdapter(IDbConnection connection)
         {
-            var builder = Options.GetOrAdd(connection.ConnectionString, _ => Options.TryGetValue(string.Empty, out var defaultBuilder) ? new ModelBuilder(defaultBuilder) : new ModelBuilder());
+            var builder = ModelBuilders.GetOrAdd(connection.ConnectionString, _ => ModelBuilders.TryGetValue(string.Empty, out var defaultBuilder) ? new ModelBuilder(defaultBuilder) : new ModelBuilder());
             if (builder.Adapter == null)
             {
                 builder.Adapter = AdapterFactory.GetAdapter(connection);

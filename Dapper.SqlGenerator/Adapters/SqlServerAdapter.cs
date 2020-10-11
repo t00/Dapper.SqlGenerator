@@ -4,6 +4,10 @@ namespace Dapper.SqlGenerator.Adapters
 {
     public class SqlServerAdapter : BaseSqlAdapter, ISqlAdapter
     {
+        public SqlServerAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters) : base(tableNameConverters, columnNameConverters)
+        {
+        }
+        
         public override string EscapeColumnName(string name)
         {
             // TODO: escape quotes
@@ -33,7 +37,7 @@ namespace Dapper.SqlGenerator.Adapters
             }
 
             sb.Append("INSERT INTO ");
-            sb.Append(modelBuilder.Adapter.EscapeTableName(table.TableName));
+            sb.Append(GetTableName(table));
             sb.Append(" (");
             sb.Append(modelBuilder.GetColumns<TEntity>(selection));
             sb.Append(") OUTPUT ");
