@@ -28,6 +28,7 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
                     e.HasKey(c => c.OrderId);
                     e.Property(c => c.OrderId)
                         .HasColumnName("Id");
+                    e.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
                 });
         }
     }

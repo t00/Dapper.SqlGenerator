@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
@@ -98,7 +99,7 @@ namespace Dapper.SqlGenerator.Adapters
             return EscapeColumnName(property.ColumnName);
         }
         
-        protected void AddInsert<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        protected void AddInsert<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
         {
             var selection = ColumnSelection.NonKeys | ColumnSelection.Write;
             if (insertKeys)
@@ -109,18 +110,18 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append("INSERT INTO ");
             sb.Append(GetTableName(table));
             sb.Append(" (");
-            sb.Append(modelBuilder.GetColumns<TEntity>(selection));
+            sb.Append(modelBuilder.GetColumns<TEntity>(selection, columnSet));
             sb.Append(") VALUES (");
-            sb.Append(modelBuilder.GetParams<TEntity>(selection));
+            sb.Append(modelBuilder.GetParams<TEntity>(selection, columnSet));
             sb.Append(")");
         }
         
-        protected void AddUpdate<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        protected void AddUpdate<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet = null)
         {
             sb.Append("UPDATE ");
             sb.Append(GetTableName(table));
             sb.Append(" SET ");
-            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write));
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write, columnSet));
             sb.Append(" WHERE ");
             sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
         }

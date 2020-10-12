@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -8,9 +9,18 @@ namespace Dapper.SqlGenerator
 {
     public class EntityTypeBuilder
     {
+        private readonly EntityTypeBuilder shared;
+
+        public EntityTypeBuilder(EntityTypeBuilder shared)
+        {
+            this.shared = shared;
+        }
+        
         public string TableName { get; protected set; }
         
         internal ConcurrentDictionary<string, (PropertyBuilder shared, ConcurrentDictionary<Type, PropertyBuilder> adapters)> ColumnsDict { get; } = new ConcurrentDictionary<string, (PropertyBuilder, ConcurrentDictionary<Type, PropertyBuilder>)>();
+
+        internal ConcurrentDictionary<string, IList<PropertyBuilder>> ColumnSetsDict { get; } = new ConcurrentDictionary<string, IList<PropertyBuilder>>();
 
         public EntityTypeBuilder ToTable(string name)
         {
@@ -18,10 +28,30 @@ namespace Dapper.SqlGenerator
             return this;
         }
 
+        public PropertyBuilder FindProperty(string name, Type adapter = null)
+        {
+            if (!ColumnsDict.TryGetValue(name, out var found))
+            {
+                return null;
+            }
+
+            if (adapter == null)
+            {
+                return found.shared;
+            }
+
+            return found.adapters.TryGetValue(adapter, out var adapterColumn) ? adapterColumn : null;
+        }
+        
         public PropertyBuilder Property(string name, Type adapter = null)
         {
-            var (shared, adapters) = ColumnsDict.GetOrAdd(name, _ => (new PropertyBuilder(name), new ConcurrentDictionary<Type, PropertyBuilder>()));
-            return adapter == null ? shared : adapters.GetOrAdd(adapter, _ => new PropertyBuilder(name) { IsKey = shared.IsKey, IsNumeric = shared.IsNumeric });
+            var (sharedProperty, adapters) = ColumnsDict.GetOrAdd(name, _ =>
+            {
+                var foundShared = shared?.FindProperty(name, adapter); 
+                return (foundShared != null ? new PropertyBuilder(foundShared) : new PropertyBuilder(name), new ConcurrentDictionary<Type, PropertyBuilder>());
+            });
+            
+            return adapter == null ? sharedProperty : adapters.GetOrAdd(adapter, _ => new PropertyBuilder(sharedProperty));
         }
 
         public EntityTypeBuilder HasKey(params string[] names)
@@ -37,6 +67,10 @@ namespace Dapper.SqlGenerator
 
     public class EntityTypeBuilder<TEntity> : EntityTypeBuilder
     {
+        public EntityTypeBuilder(EntityTypeBuilder shared) : base(shared)
+        {
+        }
+        
         public IEnumerable<PropertyBuilder> GetProperties(ModelBuilder modelBuilder)
         {
             var props = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
@@ -99,6 +133,12 @@ namespace Dapper.SqlGenerator
         public EntityTypeBuilder<TEntity> HasKey<TProperty>(Expression<Func<TEntity, TProperty>> expression)
         {
             HasKey(GetMemberName(expression));
+            return this;
+        }
+
+        public EntityTypeBuilder<TEntity> HasColumnSet(string name, params Expression<Func<TEntity, object>>[] columns)
+        {
+            ColumnSetsDict[name] = columns.Select(x => Property(GetMemberName(x))).ToList();
             return this;
         }
 

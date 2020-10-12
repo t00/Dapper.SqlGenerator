@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
@@ -20,23 +22,23 @@ namespace Dapper.SqlGenerator.Adapters
             return $"\"{name}\"";
         }
 
-        public virtual string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        public virtual string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
         {
             var sb = new StringBuilder();
-            AddInsert(sb, modelBuilder, table, insertKeys);
+            AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
             return sb.ToString();
         }
         
-        public virtual string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        public virtual string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
         {
             var sb = new StringBuilder();
-            AddInsert(sb, modelBuilder, table, insertKeys);
+            AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
             sb.Append(" RETURNING ");
             sb.Append(modelBuilder.GetColumns<TEntity>(ColumnSelection.Keys));
             return sb.ToString();
         }
 
-        public virtual string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        public virtual string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet)
         {
             var sb = new StringBuilder();
             AddUpdate(sb, modelBuilder, table);
@@ -47,6 +49,25 @@ namespace Dapper.SqlGenerator.Adapters
         {
             var sb = new StringBuilder();
             AddDelete(sb, modelBuilder, table);
+            return sb.ToString();
+        }
+        
+        public virtual string Merge<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string mergeSet, bool insertKeys, string columnSet)
+        {
+            var sb = new StringBuilder();
+            var mergeSelection = ColumnSelection.Keys | ColumnSelection.NonKeys | ColumnSelection.Write;
+            AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
+            sb.Append(" ON CONFLICT(");
+            sb.Append(modelBuilder.GetColumns<TEntity>(mergeSelection, mergeSet));
+            sb.Append(") DO ");
+            sb.Append("UPDATE ");
+            sb.Append(GetTableName(table));
+            sb.Append(" SET ");
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write, columnSet));
+            sb.Append(" WHERE ");
+            sb.Append(string.Join(" AND ", modelBuilder
+                .GetProperties<TEntity>(mergeSelection, mergeSet)
+                .Select(x => modelBuilder.Adapter.GetColumnEqualParam(x, mergeSelection)).Where(x => x != null)));
             return sb.ToString();
         }
     }

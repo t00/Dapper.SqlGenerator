@@ -23,7 +23,7 @@ namespace Dapper.SqlGenerator
         Computed = 0x04,
         
         /// <summary>
-        /// Flags the column selection to include columns or parameters for Insert and Update operations with a CAST if necessary 
+        /// Flags the column selection to return columns or parameters for Insert and Update operations with a CAST if necessary
         /// </summary>
         Write = 0x08,
         

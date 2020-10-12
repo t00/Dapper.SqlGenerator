@@ -6,7 +6,18 @@ namespace Dapper.SqlGenerator
         {
             Name = propertyName;
         }
-        
+
+        public PropertyBuilder(PropertyBuilder source)
+        {
+            Name = source.Name;
+            Ignored = source.Ignored;
+            IsKey = source.IsKey;
+            IsNumeric = source.IsNumeric;
+            ColumnName = source.ColumnName;
+            ColumnType = source.ColumnType;
+            ComputedColumnSql = source.ComputedColumnSql;
+        }
+
         public bool Ignored { get; set; }
         
         public bool IsKey { get; set; }

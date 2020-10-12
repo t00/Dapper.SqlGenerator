@@ -212,5 +212,13 @@ namespace Dapper.SqlGenerator.Tests
             var cols = sqlConnection.Sql().Delete<TestProduct>();
             Assert.AreEqual("DELETE FROM [TestProducts] WHERE [id]=@Id", cols);
         }
+        
+        [TestMethod]
+        public void TestMergePostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var cols = pgConnection.Sql().Merge<TestOrder>("unique_order");
+            Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count) ON CONFLICT(\"Id\",\"ProductId\") DO UPDATE \"orders\" SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId AND \"ProductId\"=@ProductId", cols);
+        }
     }
 }

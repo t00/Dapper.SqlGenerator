@@ -1,9 +1,14 @@
+using System;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
 {
     public class SqlServerAdapter : BaseSqlAdapter, ISqlAdapter
     {
+        private const int MaxParams = 2100;
+
+        private const int MaxQuerySize = 65536;
+        
         public SqlServerAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters) : base(tableNameConverters, columnNameConverters)
         {
         }
@@ -20,14 +25,14 @@ namespace Dapper.SqlGenerator.Adapters
             return $"[{name}]";
         }
 
-        public string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        public string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
         {
             var sb = new StringBuilder();
-            AddInsert(sb, modelBuilder, table, insertKeys);
+            AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
             return sb.ToString();
         }
 
-        public string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys)
+        public string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
         {
             var sb = new StringBuilder();
             var selection = ColumnSelection.NonKeys | ColumnSelection.Write;
@@ -39,7 +44,7 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append("INSERT INTO ");
             sb.Append(GetTableName(table));
             sb.Append(" (");
-            sb.Append(modelBuilder.GetColumns<TEntity>(selection));
+            sb.Append(modelBuilder.GetColumns<TEntity>(selection, columnSet));
             sb.Append(") OUTPUT ");
             var isFirst = true;
             foreach (var property in modelBuilder.GetProperties<TEntity>(ColumnSelection.Keys))
@@ -69,16 +74,16 @@ namespace Dapper.SqlGenerator.Adapters
             }
             
             sb.Append(" VALUES (");
-            sb.Append(modelBuilder.GetParams<TEntity>(selection));
+            sb.Append(modelBuilder.GetParams<TEntity>(selection, columnSet));
             sb.Append(")");
 
             return sb.ToString();
         }
 
-        public string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
+        public string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet)
         {
             var sb = new StringBuilder();
-            AddUpdate(sb, modelBuilder, table);
+            AddUpdate(sb, modelBuilder, table, columnSet);
             return sb.ToString();
         }
         
@@ -87,6 +92,11 @@ namespace Dapper.SqlGenerator.Adapters
             var sb = new StringBuilder();
             AddDelete(sb, modelBuilder, table);
             return sb.ToString();
+        }
+        
+        public virtual string Merge<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string mergeSet, bool insertKeys, string columnSet)
+        {
+            throw new NotImplementedException();
         }
     }
 }
