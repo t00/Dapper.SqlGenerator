@@ -64,7 +64,7 @@ namespace Dapper.SqlGenerator
         
         public string Insert<TEntity>(bool insertKeys = false, string columnSet = null)
         {
-            return CacheQuery<TEntity>($"{nameof(Insert)}_{insertKeys}", () =>
+            return CacheQuery<TEntity>($"{nameof(Insert)}_{insertKeys}_{columnSet}", () =>
             {
                 var table = EnsureEntity<TEntity>();
                 return Adapter.Insert(this, table, insertKeys, columnSet);
@@ -73,7 +73,7 @@ namespace Dapper.SqlGenerator
 
         public string InsertReturn<TEntity>(bool insertKeys = false, string columnSet = null)
         {
-            return CacheQuery<TEntity>($"{nameof(InsertReturn)}_{insertKeys}", () =>
+            return CacheQuery<TEntity>($"{nameof(InsertReturn)}_{insertKeys}_{columnSet}", () =>
             {
                 var table = EnsureEntity<TEntity>();
                 return Adapter.InsertReturn(this, table, insertKeys, columnSet);
@@ -82,7 +82,7 @@ namespace Dapper.SqlGenerator
 
         public string Update<TEntity>(string columnSet = null)
         {
-            return CacheQuery<TEntity>(nameof(Update), () =>
+            return CacheQuery<TEntity>($"{nameof(Update)}_{columnSet}", () =>
             {
                 var table = EnsureEntity<TEntity>();
                 return Adapter.Update(this, table, columnSet);
@@ -100,7 +100,7 @@ namespace Dapper.SqlGenerator
 
         public string Merge<TEntity>(string mergeSet, bool insertKeys = false, string columnSet = null)
         {
-            return CacheQuery<TEntity>(nameof(Merge), () =>
+            return CacheQuery<TEntity>($"{nameof(Merge)}_{insertKeys}_{columnSet}", () =>
             {
                 var table = EnsureEntity<TEntity>();
                 return Adapter.Merge(this, table, mergeSet, insertKeys, columnSet);
