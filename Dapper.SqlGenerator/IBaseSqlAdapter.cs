@@ -15,6 +15,8 @@ namespace Dapper.SqlGenerator
         /// <returns>Escaped table name</returns>
         string EscapeTableName(string name);
 
+        string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table);
+        
         bool IsSelected(PropertyBuilder property, ColumnSelection selection);
         
         string GetColumn(PropertyBuilder property, ColumnSelection selection);

@@ -67,7 +67,7 @@ namespace Dapper.SqlGenerator.Adapters
             }
         }
 
-        protected string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table)
+        public string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table)
         {
             if (table.TableName == null)
             {

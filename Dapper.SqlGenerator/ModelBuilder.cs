@@ -42,6 +42,11 @@ namespace Dapper.SqlGenerator
             return this;
         }
 
+        public string Table<TEntity>()
+        {
+            return Adapter.GetTableName(EnsureEntity<TEntity>());
+        }
+        
         public IList<PropertyBuilder> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select, string columnSet = null)
         {
             return columnCache.GetOrAdd((nameof(GetProperties), typeof(TEntity), selection, columnSet), key => SelectColumns<TEntity>(selection, columnSet).ToList());

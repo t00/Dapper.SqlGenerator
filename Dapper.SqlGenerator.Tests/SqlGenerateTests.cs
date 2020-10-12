@@ -220,5 +220,29 @@ namespace Dapper.SqlGenerator.Tests
             var cols = pgConnection.Sql().Merge<TestOrder>("unique_order");
             Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count) ON CONFLICT(\"Id\",\"ProductId\") DO UPDATE \"orders\" SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId AND \"ProductId\"=@ProductId", cols);
         }
+
+        [TestMethod]
+        public void TestMergeSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var cols = sqlConnection.Sql().Merge<TestOrder>("unique_order");
+            Assert.AreEqual("TODO", cols);
+        }
+
+        [TestMethod]
+        public void TestOrdersTablePostgres()
+        {
+            var pgConnection = new NpgsqlConnection();
+            var table = pgConnection.Sql().Table<TestOrder>();
+            Assert.AreEqual("\"orders\"", table);
+        }
+        
+        [TestMethod]
+        public void TestOrdersTableSqlServer()
+        {
+            var sqlConnection = new SqlConnection();
+            var table = sqlConnection.Sql().Table<TestOrder>();
+            Assert.AreEqual("[orders]", table);
+        }
     }
 }
