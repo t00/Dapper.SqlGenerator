@@ -226,7 +226,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var sqlConnection = new SqlConnection();
             var cols = sqlConnection.Sql().Merge<TestOrder>("unique_order");
-            Assert.AreEqual("TODO", cols);
+            Assert.AreEqual("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;BEGIN TRAN;IF EXISTS (SELECT * FROM [orders] WITH (UPDLOCK) WHERE [Id]=@OrderId AND [ProductId]=@ProductId) UPDATE [orders] SET [ProductId]=@ProductId,[Count]=@Count WHERE [Id]=@OrderId; ELSE INSERT INTO [orders] ([ProductId],[Count]) VALUES (@ProductId,@Count); COMMIT", cols);
         }
 
         [TestMethod]

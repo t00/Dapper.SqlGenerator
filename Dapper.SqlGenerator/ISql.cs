@@ -4,10 +4,10 @@ namespace Dapper.SqlGenerator
 {
     public interface ISql
     {
-        IList<PropertyBuilder> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select, string columnSet = null);
-
         string Table<TEntity>();
         
+        IList<PropertyBuilder> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select, string columnSet = null);
+
         string GetColumns<TEntity>(ColumnSelection selection, string columnSet = null);
 
         string GetParams<TEntity>(ColumnSelection selection, string columnSet = null);

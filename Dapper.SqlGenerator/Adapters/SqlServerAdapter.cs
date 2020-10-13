@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
@@ -96,7 +96,22 @@ namespace Dapper.SqlGenerator.Adapters
         
         public virtual string Merge<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string mergeSet, bool insertKeys, string columnSet)
         {
-            throw new NotImplementedException();
-        }
+            // Preferred method 2017 - https://michaeljswart.com/2017/07/sql-server-upsert-patterns-and-antipatterns/
+            var sb = new StringBuilder();
+            var mergeSelection = ColumnSelection.Keys | ColumnSelection.NonKeys | ColumnSelection.Write;
+            sb.Append("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;BEGIN TRAN;IF EXISTS (SELECT * FROM ");
+            sb.Append(GetTableName(table));
+            sb.Append(" WITH (UPDLOCK) WHERE ");
+            var condition = string.Join(" AND ", modelBuilder
+                .GetProperties<TEntity>(mergeSelection, mergeSet)
+                .Select(x => modelBuilder.Adapter.GetColumnEqualParam(x, mergeSelection)).Where(x => x != null));
+            sb.Append(condition);
+            sb.Append(") ");
+            AddUpdate(sb, modelBuilder, table, columnSet);
+            sb.Append("; ELSE ");
+            AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
+            sb.Append("; COMMIT");
+            return sb.ToString();
+       }
     }
 }
