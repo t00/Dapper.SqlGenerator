@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include=".circleci\config.yml.xml" />
+  </ItemGroup>
+
 </Project>
