@@ -14,19 +14,21 @@
             - dotnet-packages-v1-{{ checksum "Dapper.SqlGenerator/Dapper.SqlGenerator.csproj" }}
       - run:
           name: "Install project dependencies"
-          command: dotnet.exe restore
+          command: dotnet restore
       - save_cache:
           paths:
             - C:\Users\circleci\.nuget\packages
           key: dotnet-packages-v1-{{ checksum "Dapper.SqlGenerator/Dapper.SqlGenerator.csproj" }}
       - run:
           name: "Run Application Tests"
-          command: dotnet.exe test -v n --results-directory:test_coverage --collect:"Code Coverage"
+          command: dotnet test -v n --results-directory:TestResults --collect:"Code Coverage" --test-adapter-path:. --logger:junit
       - run:
           name: "Print Working Directory"
           command: pwd
       - store_artifacts:
-          path: C:\Users\circleci\project\test_coverage
+          path: C:\Users\circleci\project\TestResults
+      - store_test_results:
+          path: C:\Users\circleci\project\TestResults\TestResults.xml
    build:
      description: Build application with Release configuration
      executor: win/default
@@ -34,7 +36,7 @@
        - checkout
        - run:
           name: "Build Application according to some given configuration"
-          command: dotnet.exe build --configuration Release
+          command: dotnet build --configuration Release
  workflows:
    test_and_build:
     jobs:
