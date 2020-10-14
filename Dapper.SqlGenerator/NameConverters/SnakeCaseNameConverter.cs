@@ -53,7 +53,7 @@ namespace Dapper.SqlGenerator.NameConverters
                 sb.Append(name.Substring(firstUpper));
             }
 
-            return sb.ToString().ToLowerInvariant();
+            return sb.ToString();
         }
     }
 }

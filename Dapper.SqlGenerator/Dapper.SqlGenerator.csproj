@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>Database agnostic SQL code generation for Dapper without POCO attributes</Title>
+    <Authors>Michal Turecki</Authors>
+    <Description>SqlGenerator is not only for Dapper, does not have any dependencies and generates modern SQL depending on a connection type while being fully customizable  </Description>
+    <PackageProjectUrl>https://github.com/t00/Dapper.SqlGenerator</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/t00/Dapper.SqlGenerator</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -35,11 +35,11 @@ namespace Dapper.SqlGenerator.Tests
         public void TestSnakeCase()
         {
             var n1 = new SnakeCaseNameConverter().Convert("SQLPropertyNameANDAcronymsLAST");
-            Assert.AreEqual("sql_property_name_and_acronyms_last", n1);
+            Assert.AreEqual("SQL_Property_Name_AND_Acronyms_LAST", n1);
             var n2 = new SnakeCaseNameConverter().Convert("PropertyName");
-            Assert.AreEqual("property_name", n2);
+            Assert.AreEqual("Property_Name", n2);
             var n3 = new SnakeCaseNameConverter().Convert("propertyNameANDAcronymF");
-            Assert.AreEqual("property_name_and_acronym_f", n3);
+            Assert.AreEqual("property_Name_AND_Acronym_F", n3);
         }
 
         [TestMethod]
