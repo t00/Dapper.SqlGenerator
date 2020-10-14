@@ -22,13 +22,10 @@
       - run:
           name: "Run Application Tests"
           command: dotnet test -v n --results-directory:TestResults --collect:"Code Coverage" --test-adapter-path:. --logger:junit
-      - run:
-          name: "Print Working Directory"
-          command: pwd
-      - store_artifacts:
-          path: C:\Users\circleci\project\TestResults
       - store_test_results:
           path: C:\Users\circleci\project\TestResults\TestResults.xml
+      - store_artifacts:
+          path: C:\Users\circleci\project\TestResults
    build:
      description: Build application with Release configuration
      executor: win/default
