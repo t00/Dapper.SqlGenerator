@@ -5,7 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include=".circleci\config.yml.xml" />
+    <Compile Remove=".circleci\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove=".circleci\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".circleci\**" />
   </ItemGroup>
 
 </Project>
