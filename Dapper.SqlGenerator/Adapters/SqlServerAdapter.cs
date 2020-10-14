@@ -102,10 +102,7 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;BEGIN TRAN;IF EXISTS (SELECT * FROM ");
             sb.Append(GetTableName(table));
             sb.Append(" WITH (UPDLOCK) WHERE ");
-            var condition = string.Join(" AND ", modelBuilder
-                .GetProperties<TEntity>(mergeSelection, mergeSet)
-                .Select(x => modelBuilder.Adapter.GetColumnEqualParam(x, mergeSelection)).Where(x => x != null));
-            sb.Append(condition);
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(mergeSelection, mergeSet, " AND "));
             sb.Append(") ");
             AddUpdate(sb, modelBuilder, table, columnSet);
             sb.Append("; ELSE ");

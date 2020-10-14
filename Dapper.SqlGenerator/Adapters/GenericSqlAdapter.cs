@@ -65,10 +65,7 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(" SET ");
             sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write, columnSet));
             sb.Append(" WHERE ");
-            var condition = string.Join(" AND ", modelBuilder
-                .GetProperties<TEntity>(mergeSelection, mergeSet)
-                .Select(x => modelBuilder.Adapter.GetColumnEqualParam(x, mergeSelection)).Where(x => x != null));
-            sb.Append(condition);
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(mergeSelection, mergeSet, " AND "));
             return sb.ToString();
         }
     }
