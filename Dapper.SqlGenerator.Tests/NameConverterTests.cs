@@ -41,5 +41,16 @@ namespace Dapper.SqlGenerator.Tests
             var n3 = new SnakeCaseNameConverter().Convert("propertyNameANDAcronymF");
             Assert.AreEqual("property_name_and_acronym_f", n3);
         }
+
+        [TestMethod]
+        public void TestPlural()
+        {
+            var n1 = new PluralNameConverter().Convert("mushroom");
+            Assert.AreEqual("mushrooms", n1);
+            var n2 = new PluralNameConverter().Convert("Settings");
+            Assert.AreEqual("Settings", n2);
+            var n3 = new PluralNameConverter().Convert("user_role");
+            Assert.AreEqual("user_roles", n3);
+        }
     }
 }
