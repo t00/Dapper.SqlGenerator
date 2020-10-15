@@ -20,7 +20,8 @@ namespace Dapper.SqlGenerator.Adapters
                 typeof(decimal),
                 typeof(string),
                 typeof(DateTime),
-                typeof(Guid)
+                typeof(TimeSpan),
+                typeof(Guid),
             }; 
         }
 

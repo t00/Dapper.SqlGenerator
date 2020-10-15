@@ -28,6 +28,8 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
         public Guid? MaybeGuid { get; set; }
         
         public Guid Guid { get; set; }
+        
+        public TimeSpan Duration { get; set; }
 
         public bool Last { get; set; }
     }
