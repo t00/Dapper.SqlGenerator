@@ -1,4 +1,5 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
@@ -9,7 +10,8 @@ namespace Dapper.SqlGenerator.Adapters
 
         private const int MaxQuerySize = 65536;
         
-        public SqlServerAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters) : base(tableNameConverters, columnNameConverters)
+        public SqlServerAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters, IEnumerable<Type> nonPrimitiveTypes = null)
+            : base(tableNameConverters, columnNameConverters, nonPrimitiveTypes)
         {
         }
         

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -6,7 +7,8 @@ namespace Dapper.SqlGenerator.Adapters
 {
     public class GenericSqlAdapter : BaseSqlAdapter, ISqlAdapter
     {
-        public GenericSqlAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters) : base(tableNameConverters, columnNameConverters)
+        public GenericSqlAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters, IEnumerable<Type> nonPrimitiveTypes = null)
+            : base(tableNameConverters, columnNameConverters, nonPrimitiveTypes)
         {
         }
 

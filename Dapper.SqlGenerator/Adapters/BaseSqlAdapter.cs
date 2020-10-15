@@ -9,11 +9,19 @@ namespace Dapper.SqlGenerator.Adapters
     {
         private readonly INameConverter[] tableNameConverters;
         private readonly INameConverter[] columnNameConverters;
+        private readonly ICollection<Type> nonPrimitiveTypes;
 
-        protected BaseSqlAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters)
+        protected BaseSqlAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters, IEnumerable<Type> nonPrimitiveTypes = null)
         {
             this.tableNameConverters = tableNameConverters;
             this.columnNameConverters = columnNameConverters;
+            this.nonPrimitiveTypes = nonPrimitiveTypes != null ? new HashSet<Type>(nonPrimitiveTypes) : new HashSet<Type>
+            {
+                typeof(decimal),
+                typeof(string),
+                typeof(DateTime),
+                typeof(Guid)
+            }; 
         }
 
         public abstract string EscapeColumnName(string name);
@@ -69,9 +77,15 @@ namespace Dapper.SqlGenerator.Adapters
             }
         }
 
-        public virtual bool AcceptType(PropertyInfo propertyInfo)
+        public virtual bool AcceptType(PropertyInfo property)
         {
-            return propertyInfo.PropertyType.IsPrimitive || propertyInfo.PropertyType.IsEnum || NonPrimitiveTypes.Contains(propertyInfo.PropertyType);
+            var type = property.PropertyType;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                type = Nullable.GetUnderlyingType(type) ?? type;
+            }
+
+            return type.IsPrimitive || type.IsEnum || nonPrimitiveTypes.Contains(type);
         }
         
         public string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table)
@@ -140,12 +154,5 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(" WHERE ");
             sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
         }
-        
-        private static readonly ICollection<Type> NonPrimitiveTypes = new HashSet<Type>
-        {
-            typeof(decimal),
-            typeof(string),
-            typeof(Guid)
-        }; 
     }
 }

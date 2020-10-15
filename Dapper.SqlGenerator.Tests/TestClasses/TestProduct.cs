@@ -20,6 +20,14 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
         public Exception Class { get; set; }
 
         public TestEnum Enum { get; set; }
+        
+        public DateTime? MaybeDate { get; set; }
+        
+        public DateTime Date { get; set; }
+        
+        public Guid? MaybeGuid { get; set; }
+        
+        public Guid Guid { get; set; }
 
         public bool Last { get; set; }
     }
