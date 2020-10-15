@@ -1,6 +1,3 @@
-using System;
-using System.Text;
-
 namespace Dapper.SqlGenerator
 {
     public interface ISqlAdapter : IBaseSqlAdapter

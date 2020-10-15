@@ -1,3 +1,6 @@
+using System;
+using System.Reflection;
+
 namespace Dapper.SqlGenerator
 {
     public class PropertyBuilder
@@ -5,6 +8,13 @@ namespace Dapper.SqlGenerator
         public PropertyBuilder(string propertyName)
         {
             Name = propertyName;
+        }
+
+        public PropertyBuilder(PropertyInfo propertyInfo)
+        {
+            Name = propertyInfo.Name;
+            var typeCode = Type.GetTypeCode(propertyInfo.PropertyType);
+            IsNumeric = typeCode >= TypeCode.Byte && typeCode <= TypeCode.Int64;
         }
 
         public PropertyBuilder(PropertyBuilder source)

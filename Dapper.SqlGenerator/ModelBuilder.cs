@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Dapper.SqlGenerator
 {
@@ -15,6 +16,7 @@ namespace Dapper.SqlGenerator
         {
             Shared = new EntityTypeBuilder(null);
             tableDict = new ConcurrentDictionary<Type, EntityTypeBuilder>();
+            HasDefaultKeyColumn("Id");
         }
 
         public ModelBuilder(ModelBuilder source)
@@ -141,5 +143,5 @@ namespace Dapper.SqlGenerator
 
             return properties.Where(x => setColumns.Contains(x));
         }
-   }
+    }
 }

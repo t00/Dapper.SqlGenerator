@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
@@ -67,6 +69,11 @@ namespace Dapper.SqlGenerator.Adapters
             }
         }
 
+        public virtual bool AcceptType(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.PropertyType.IsPrimitive || propertyInfo.PropertyType.IsEnum || NonPrimitiveTypes.Contains(propertyInfo.PropertyType);
+        }
+        
         public string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table)
         {
             if (table.TableName == null)
@@ -133,5 +140,12 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(" WHERE ");
             sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
         }
+        
+        private static readonly ICollection<Type> NonPrimitiveTypes = new HashSet<Type>
+        {
+            typeof(decimal),
+            typeof(string),
+            typeof(Guid)
+        }; 
     }
 }

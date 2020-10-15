@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Dapper.SqlGenerator.Tests.TestClasses
 {
     internal class TestProduct
@@ -11,5 +14,20 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
         public string Content { get; set; }
             
         public int Value { get; set; }
+        
+        public KeyValuePair<int, string> Struct { get; set; }
+        
+        public Exception Class { get; set; }
+
+        public TestEnum Enum { get; set; }
+
+        public bool Last { get; set; }
+    }
+
+    internal enum TestEnum
+    {
+        None,
+        Some = 1,
+        All = 2
     }
 }

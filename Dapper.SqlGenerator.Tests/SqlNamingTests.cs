@@ -42,7 +42,7 @@ namespace Dapper.SqlGenerator.Tests
             TestAdapters["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new SnakeCaseNameConverter(), new LowerCaseNameConverter(), new PluralNameConverter() }, new INameConverter[] { new LowerCaseNameConverter() });
             var pgConnection = new NpgsqlConnection() { ConnectionString = "new" };
             var insert = pgConnection.Sql().Insert<TestProduct>();
-            Assert.AreEqual("INSERT INTO \"test_products\" (\"Type\",\"content\") VALUES (@Kind,CAST(@Content AS json))", insert);
+            Assert.AreEqual("INSERT INTO \"test_products\" (\"Type\",\"content\",\"enum\",\"last\") VALUES (@Kind,CAST(@Content AS json),@Enum,@Last)", insert);
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Dapper.SqlGenerator
         public IEnumerable<PropertyBuilder> GetProperties(ModelBuilder modelBuilder)
         {
             var props = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
-            foreach (var prop in props)
+            foreach (var prop in props.Where(modelBuilder.Adapter.AcceptType))
             {
                 if (FindColumn(this, prop.Name, out var custom))
                 {
@@ -86,12 +86,7 @@ namespace Dapper.SqlGenerator
                 }
                 else
                 {
-                    var typeCode = Type.GetTypeCode(prop.PropertyType);
-                    yield return new PropertyBuilder(prop.Name)
-                    {
-                        ColumnName = prop.Name,
-                        IsNumeric = typeCode >= TypeCode.Byte && typeCode <= TypeCode.Int64 
-                    };
+                    yield return new PropertyBuilder(prop);
                 }
             }
 

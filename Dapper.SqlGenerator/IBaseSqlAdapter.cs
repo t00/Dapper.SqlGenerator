@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Dapper.SqlGenerator
 {
     public interface IBaseSqlAdapter
@@ -24,5 +26,12 @@ namespace Dapper.SqlGenerator
         string GetParam(PropertyBuilder property, ColumnSelection selection);
         
         string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection);
+
+        /// <summary>
+        /// Returns true if the type on the object can be used in SQL expressions
+        /// </summary>
+        /// <param name="propertyInfo">Reflection property type information</param>
+        /// <returns>True if property can be used</returns>
+        bool AcceptType(PropertyInfo propertyInfo);
     }
 }
