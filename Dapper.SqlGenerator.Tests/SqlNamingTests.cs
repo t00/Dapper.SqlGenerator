@@ -4,11 +4,11 @@ using Dapper.SqlGenerator.Adapters;
 using Dapper.SqlGenerator.NameConverters;
 using Dapper.SqlGenerator.Tests.Connections;
 using Dapper.SqlGenerator.Tests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Dapper.SqlGenerator.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SqlNamingTests
     {
         private static readonly Dictionary<string, ISqlAdapter> TestAdapters = new Dictionary<string, ISqlAdapter>(6)
@@ -23,20 +23,20 @@ namespace Dapper.SqlGenerator.Tests
             return TestAdapters.TryGetValue(adapterKey, out var adapter) ? adapter : new GenericSqlAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]);
         }
        
-        [TestInitialize]
+        [SetUp]
         public void Init()
         {
             ProductOrderInit.Init("new");
             AdapterFactory.AdapterLookup = AdapterLookup;
         }
 
-        [TestCleanup]
+        [TearDown]
         public void Cleanup()
         {
             AdapterFactory.AdapterLookup = null;
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertPostgres()
         {
             TestAdapters["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new SnakeCaseNameConverter(), new LowerCaseNameConverter(), new PluralNameConverter() }, new INameConverter[] { new LowerCaseNameConverter() });

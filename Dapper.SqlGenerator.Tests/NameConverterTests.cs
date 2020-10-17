@@ -1,26 +1,26 @@
 using Dapper.SqlGenerator.NameConverters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Dapper.SqlGenerator.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class NameConverterTests
     {
-        [TestMethod]
+        [Test]
         public void TestLowerCase()
         {
             var n = new LowerCaseNameConverter().Convert("SQLPropertyNameANDAcronymsLAST");
             Assert.AreEqual("sqlpropertynameandacronymslast", n);
         }
         
-        [TestMethod]
+        [Test]
         public void TestUpperCase()
         {
             var n = new UpperCaseNameConverter().Convert("SQLPropertyNameANDAcronymsLAST");
             Assert.AreEqual("SQLPROPERTYNAMEANDACRONYMSLAST", n);
         }
         
-        [TestMethod]
+        [Test]
         public void TestCamelCase()
         {
             var n1 = new CamelCaseNameConverter().Convert("SQLPropertyNameANDAcronymsLAST");
@@ -31,7 +31,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("propertyName", n3);
         }
         
-        [TestMethod]
+        [Test]
         public void TestSnakeCase()
         {
             var n1 = new SnakeCaseNameConverter().Convert("SQLPropertyNameANDAcronymsLAST");
@@ -42,7 +42,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("property_Name_AND_Acronym_F", n3);
         }
 
-        [TestMethod]
+        [Test]
         public void TestPlural()
         {
             var n1 = new PluralNameConverter().Convert("mushroom");

@@ -1,19 +1,19 @@
 using Dapper.SqlGenerator.Tests.Connections;
 using Dapper.SqlGenerator.Tests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Dapper.SqlGenerator.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SqlGenerateTests
     {
-        [TestInitialize]
+        [SetUp]
         public void Init()
         {
             ProductOrderInit.Init();
         }
         
-        [TestMethod]
+        [Test]
         public void TestGetColumnsProductPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -25,7 +25,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\"", cols, "NonKeys");
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetColumnsProductSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -37,7 +37,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("[Type] AS [Kind],[Content],[Id] + 1 AS [Value],[Enum],[MaybeDate],[Date],[MaybeGuid],[Guid],[Duration],[Last]", cols, "NonKeys");
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetColumnsOrderPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -49,7 +49,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("\"ProductId\",\"Count\"", cols, "NonKeys");
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetColumnsOrderSqlServer()
         {
             var pgConnection = new SqlConnection();
@@ -61,7 +61,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("[ProductId],[Count]", cols, "NonKeys");
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetColumnEqualParamProductPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -73,7 +73,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("\"Type\"=@Kind,\"Content\"=CAST(@Content AS json),\"Enum\"=@Enum,\"MaybeDate\"=@MaybeDate,\"Date\"=@Date,\"MaybeGuid\"=@MaybeGuid,\"Guid\"=@Guid,\"Duration\"=@Duration,\"Last\"=@Last", cols, "NonKeys");
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetColumnEqualParamSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -85,7 +85,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("[Type]=@Kind,[Content]=@Content,[Enum]=@Enum,[MaybeDate]=@MaybeDate,[Date]=@Date,[MaybeGuid]=@MaybeGuid,[Guid]=@Guid,[Duration]=@Duration,[Last]=@Last", cols, "NonKeys");
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -93,7 +93,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"TestProducts\" (\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", insert);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertKeysPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -101,7 +101,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"TestProducts\" (\"id\",\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Id,@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", insert);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertOrdersPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -109,7 +109,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count)", insert);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertOrdersKeysPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -117,7 +117,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"orders\" (\"Id\",\"ProductId\",\"Count\") VALUES (@OrderId,@ProductId,@Count)", insert);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -125,7 +125,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO [TestProducts] ([Type],[Content],[Enum],[MaybeDate],[Date],[MaybeGuid],[Guid],[Duration],[Last]) VALUES (@Kind,@Content,@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", insert);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertKeysSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -133,7 +133,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO [TestProducts] ([id],[Type],[Content],[Enum],[MaybeDate],[Date],[MaybeGuid],[Guid],[Duration],[Last]) VALUES (@Id,@Kind,@Content,@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", insert);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertReturnPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -141,7 +141,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"TestProducts\" (\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last) RETURNING \"id\" AS \"Id\"", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertKeysReturnPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -149,7 +149,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"TestProducts\" (\"id\",\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Id,@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last) RETURNING \"id\" AS \"Id\"", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertReturnSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -157,7 +157,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO [TestProducts] ([Type],[Content],[Enum],[MaybeDate],[Date],[MaybeGuid],[Guid],[Duration],[Last]) OUTPUT INSERTED.[id] AS [Id] VALUES (@Kind,@Content,@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestInsertKeysReturnSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -165,7 +165,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO [TestProducts] ([id],[Type],[Content],[Enum],[MaybeDate],[Date],[MaybeGuid],[Guid],[Duration],[Last]) OUTPUT INSERTED.[id] AS [Id] VALUES (@Id,@Kind,@Content,@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestUpdatePostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -173,7 +173,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("UPDATE \"TestProducts\" SET \"Type\"=@Kind,\"Content\"=CAST(@Content AS json),\"Enum\"=@Enum,\"MaybeDate\"=@MaybeDate,\"Date\"=@Date,\"MaybeGuid\"=@MaybeGuid,\"Guid\"=@Guid,\"Duration\"=@Duration,\"Last\"=@Last WHERE \"id\"=@Id", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestUpdateOrdersPostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -181,7 +181,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("UPDATE \"orders\" SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestUpdateSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -189,7 +189,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("UPDATE [TestProducts] SET [Type]=@Kind,[Content]=@Content,[Enum]=@Enum,[MaybeDate]=@MaybeDate,[Date]=@Date,[MaybeGuid]=@MaybeGuid,[Guid]=@Guid,[Duration]=@Duration,[Last]=@Last WHERE [id]=@Id", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestUpdateOrdersSqlServer()
         {
             var pgConnection = new SqlConnection();
@@ -197,7 +197,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("UPDATE [orders] SET [ProductId]=@ProductId,[Count]=@Count WHERE [Id]=@OrderId", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestDeletePostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -205,7 +205,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("DELETE FROM \"TestProducts\" WHERE \"id\"=@Id", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestDeleteSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -213,7 +213,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("DELETE FROM [TestProducts] WHERE [id]=@Id", cols);
         }
         
-        [TestMethod]
+        [Test]
         public void TestMergePostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -221,7 +221,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count) ON CONFLICT(\"Id\",\"ProductId\") DO UPDATE \"orders\" SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId AND \"ProductId\"=@ProductId", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestMergeSqlServer()
         {
             var sqlConnection = new SqlConnection();
@@ -229,7 +229,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;BEGIN TRAN;IF EXISTS (SELECT * FROM [orders] WITH (UPDLOCK) WHERE [Id]=@OrderId AND [ProductId]=@ProductId) UPDATE [orders] SET [ProductId]=@ProductId,[Count]=@Count WHERE [Id]=@OrderId; ELSE INSERT INTO [orders] ([ProductId],[Count]) VALUES (@ProductId,@Count); COMMIT", cols);
         }
 
-        [TestMethod]
+        [Test]
         public void TestOrdersTablePostgres()
         {
             var pgConnection = new NpgsqlConnection();
@@ -237,7 +237,7 @@ namespace Dapper.SqlGenerator.Tests
             Assert.AreEqual("\"orders\"", table);
         }
         
-        [TestMethod]
+        [Test]
         public void TestOrdersTableSqlServer()
         {
             var sqlConnection = new SqlConnection();
