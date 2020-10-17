@@ -80,6 +80,11 @@ namespace Dapper.SqlGenerator.Adapters
 
         public virtual bool AcceptType(PropertyInfo property)
         {
+            if (!property.CanWrite)
+            {
+                return false;
+            }
+
             var type = property.PropertyType;
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {

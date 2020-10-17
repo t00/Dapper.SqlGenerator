@@ -7,6 +7,8 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
         public int ProductId { get; set; }
         
         public int Count { get; set; }
+
+        public bool ReadOnly { get; } = true;
     }
 
 }
