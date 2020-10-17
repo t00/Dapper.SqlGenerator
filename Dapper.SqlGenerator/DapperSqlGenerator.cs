@@ -12,6 +12,12 @@ namespace Dapper.SqlGenerator
             return ModelBuilders.GetOrAdd(connectionString ?? string.Empty, _ => new ModelBuilder());
         }
         
+        public static ModelBuilder Reset(string connectionString = null)
+        {
+            ModelBuilders.TryRemove(connectionString ?? string.Empty, out var builder);
+            return builder;
+        }
+
         public static ISql Sql(this IDbConnection connection)
         {
             return EnsureAdapter(connection);

@@ -4,9 +4,9 @@ namespace Dapper.SqlGenerator.NameConverters
 {
     public class SnakeCaseNameConverter : INameConverter
     {
-        private readonly char separator;
+        private readonly string separator;
 
-        public SnakeCaseNameConverter(char separator = '_')
+        public SnakeCaseNameConverter(string separator = "_")
         {
             this.separator = separator;
         }

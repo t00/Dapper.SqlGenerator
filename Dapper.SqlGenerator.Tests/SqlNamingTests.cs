@@ -13,8 +13,8 @@ namespace Dapper.SqlGenerator.Tests
     {
         private static readonly Dictionary<string, ISqlAdapter> TestAdapters = new Dictionary<string, ISqlAdapter>(6)
         {
-            ["sqlconnection"] = new SqlServerAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]),
-            ["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]),
+            ["sqlconnection"] = new SqlServerAdapter(new INameConverter[] { new SnakeCaseNameConverter(), new LowerCaseNameConverter(), new PluralNameConverter() }, new INameConverter[] { new LowerCaseNameConverter() }),
+            ["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new SnakeCaseNameConverter(), new LowerCaseNameConverter(), new PluralNameConverter() }, new INameConverter[] { new LowerCaseNameConverter() })
         };
 
         private static ISqlAdapter AdapterLookup(IDbConnection connection)
@@ -26,23 +26,33 @@ namespace Dapper.SqlGenerator.Tests
         [SetUp]
         public void Init()
         {
-            ProductOrderInit.Init("new");
+            ProductOrderInit.Init("pgNew");
+            ProductOrderInit.Init("sqlNew");
             AdapterFactory.AdapterLookup = AdapterLookup;
         }
 
         [TearDown]
         public void Cleanup()
         {
+            ProductOrderInit.Reset("pgNew");
+            ProductOrderInit.Reset("sqlNew");
             AdapterFactory.AdapterLookup = null;
         }
 
         [Test]
         public void TestInsertPostgres()
         {
-            TestAdapters["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new SnakeCaseNameConverter(), new LowerCaseNameConverter(), new PluralNameConverter() }, new INameConverter[] { new LowerCaseNameConverter() });
-            var pgConnection = new NpgsqlConnection() { ConnectionString = "new" };
+            var pgConnection = new NpgsqlConnection() { ConnectionString = "pgNew" };
             var insert = pgConnection.Sql().Insert<TestProduct>();
             Assert.AreEqual("INSERT INTO \"test_products\" (\"Type\",\"content\",\"enum\",\"maybedate\",\"date\",\"maybeguid\",\"guid\",\"duration\",\"last\") VALUES (@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", insert);
+        }
+        [Test]
+        
+        public void TestInsertSqlServer()
+        {
+            var sqlConnection = new SqlConnection() { ConnectionString = "sqlNew" };
+            var insert = sqlConnection.Sql().Insert<TestProduct>();
+            Assert.AreEqual("INSERT INTO [test_products] ([Type],[content],[enum],[maybedate],[date],[maybeguid],[guid],[duration],[last]) VALUES (@Kind,@Content,@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last)", insert);
         }
     }
 }

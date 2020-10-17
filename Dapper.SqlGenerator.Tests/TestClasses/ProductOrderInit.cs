@@ -31,5 +31,10 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
                     e.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
                 });
         }
+
+        public static void Reset(string connectionString = null)
+        {
+            DapperSqlGenerator.Reset(connectionString);
+        }
     }
 }
