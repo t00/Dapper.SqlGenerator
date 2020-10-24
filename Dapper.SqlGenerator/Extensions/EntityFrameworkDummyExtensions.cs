@@ -16,7 +16,17 @@ namespace Dapper.SqlGenerator.Extensions
             return builder;
         }
         
+        public static PropertyBuilder IsUnicode(this PropertyBuilder builder, bool isUnicode)
+        {
+            return builder;
+        }
+        
         public static PropertyBuilder HasDefaultValueSql(this PropertyBuilder builder, string sql)
+        {
+            return builder;
+        }
+        
+        public static PropertyBuilder ValueGeneratedNever(this PropertyBuilder builder)
         {
             return builder;
         }
