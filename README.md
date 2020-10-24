@@ -1,15 +1,27 @@
 # Dapper.SqlGenerator
-Database agnostic SQL code generation for Dapper without POCO attributes
+Database agnostic SQL code generation for Dapper without POCO attributes and Entity Framework Core compatible schema definition.
 
 ## Usage
 
-Documentation is not complete, check unit tests for more examples.
-
-Project will aim to eventually be fully compatible with Entity Framework Core schema definition.
+Note: Documentation is not complete, check unit tests for more examples.
 
 One of the project aims is performance - generated queries are cached as well as sets of columns.
 
 Currently only NpgsqlConnection and SqlConnection are supported but writing a custom adapter is very simple and requires only implementing ISqlAdapter interface and registering it.
+
+Project will aim to eventually be fully compatible with Entity Framework Core schema definition. To crate mappings for an existing database use the following command:
+
+    dotnet ef dbcontext scaffold "Server=.\SQLEXPRESS;Database=MyDb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
+
+In the generated schema definitions remove Entity Framework namespaces and initialize SqlGenerator with generated schema:
+
+    using Dapper.SqlGenerator;
+    using Dapper.SqlGenerator.Extensions;
+
+    void InitSqlGenerator()
+    {
+        OnModelCreating(DapperSqlGenerator.Configure());
+    }
 
 Simplest use case does not require any initialization - just use the following methods on the IDbConnection:
 
@@ -18,15 +30,19 @@ Simplest use case does not require any initialization - just use the following m
     string insertSql = connection.Sql().Insert<Product>();
     string insertAndReturnSql = connection.Sql().InsertReturn<Product>();
     string updateSql = connection.Sql().Update<Product>();
-    string deleteSql = connection.Sql().Delete<TestProduct>();
+    string deleteSql = connection.Sql().Delete<Product>();
     string upsertMergeSql = connection.Sql().Merge<Product>("unique_order");
 
     string tableName = connection.Sql().Table<Order>();
 
-    IList<PropertyBuilder> someKeyColumnDefinitions = connection.Sql().GetProperties<Order>(ColumnSelection.Keys, 'main-keys');
     string commaSeparatedNonKeyColumns = connection.Sql().GetColumns<Order>(ColumnSelection.NonKeys);
-    string keysAtQueryParams = connection.Sql().GetParams<Ordeer>(ColumnSelection.Keys);
+    string keysAtQueryParams = connection.Sql().GetParams<Order>(ColumnSelection.Keys);
     string columnEqualParams = connection.Sql().GetColumnEqualParams<Order>(ColumnSelection.NonKeys);
+    
+    DapperSqlGenerator.Configure().Entity<Order>.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
+    IList<IProperty> uniqueColumns = connection.Sql().GetProperties<Order>(ColumnSelection.Select, 'unique_order');
+
+There is no SELECT query available - GetColumns will generate comma generated columns.
 
 On program initialization special naming or key column rules can be defined which will be handled by SqlGenerator.
 
@@ -34,7 +50,7 @@ Example for 2 entities:
 
     DapperSqlGenerator.Configure(connectionString)
         .HasDefaultKeyColumn("Id", o => o.HasColumnName("id"))
-        .Entity<TestProduct>(e =>
+        .Entity<Product>(e =>
         {
             e.Property(x => x.Kind)
                 .HasColumnName("Type");
@@ -47,7 +63,7 @@ Example for 2 entities:
             e.Property(x => x.Value, typeof(SqlServerAdapter))
                 .HasComputedColumnSql("[Id] + 1");
         })
-        .Entity<TestOrder>(e =>
+        .Entity<Order>(e =>
         {
             e.ToTable("orders");
             e.HasKey(c => c.OrderId);
