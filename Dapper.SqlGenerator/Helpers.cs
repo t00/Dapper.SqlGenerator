@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Dapper.SqlGenerator.Extensions
+namespace Dapper.SqlGenerator
 {
     internal static class Helpers
     {
