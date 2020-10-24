@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Dapper.SqlGenerator
 {
-    public class PropertyBuilder
+    public class PropertyBuilder : IProperty
     {
         public PropertyBuilder(string propertyName)
         {
@@ -20,59 +20,29 @@ namespace Dapper.SqlGenerator
         public PropertyBuilder(PropertyBuilder source)
         {
             Name = source.Name;
-            Ignored = source.Ignored;
-            IsKey = source.IsKey;
-            IsNumeric = source.IsNumeric;
             ColumnName = source.ColumnName;
             ColumnType = source.ColumnType;
+            IsKey = source.IsKey;
+            Ignored = source.Ignored;
+            IsNumeric = source.IsNumeric;
             ComputedColumnSql = source.ComputedColumnSql;
         }
 
-        public bool Ignored { get; set; }
-        
-        public bool IsKey { get; set; }
-        
-        /// <summary>
-        /// The column represents a numeric key (byte or any int)
-        /// </summary>
-        public bool IsNumeric { get; set; }
-        
         public string Name { get; }
         
         public string ColumnName { get; set; }
 
         public string ColumnType { get; set; }
 
+        public bool IsKey { get; set; }
+
+        public bool Ignored { get; set; }
+        
+        /// <summary>
+        /// The column represents a numeric key (byte or any int)
+        /// </summary>
+        public bool IsNumeric { get; set; }
+        
         public string ComputedColumnSql { get; set; }
-
-        public PropertyBuilder Ignore()
-        {
-            Ignored = true;
-            return this;
-        }
-
-        public PropertyBuilder HasColumnName(string name)
-        {
-            ColumnName = name;
-            return this;
-        }
-
-        public PropertyBuilder HasColumnType(string type)
-        {
-            ColumnType = type;
-            return this;
-        }
-
-        public PropertyBuilder HasNumericKey()
-        {
-            IsNumeric = true;
-            return this;
-        }
-
-        public PropertyBuilder HasComputedColumnSql(string name)
-        {
-            ComputedColumnSql = name;
-            return this;
-        }
     }
 }

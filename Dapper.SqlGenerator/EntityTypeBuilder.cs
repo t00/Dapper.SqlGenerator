@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Dapper.SqlGenerator.Extensions;
 
 namespace Dapper.SqlGenerator
 {
@@ -16,17 +17,11 @@ namespace Dapper.SqlGenerator
             this.shared = shared;
         }
         
-        public string TableName { get; protected set; }
+        public string TableName { get; set; }
         
         internal ConcurrentDictionary<string, (PropertyBuilder shared, ConcurrentDictionary<Type, PropertyBuilder> adapters)> ColumnsDict { get; } = new ConcurrentDictionary<string, (PropertyBuilder, ConcurrentDictionary<Type, PropertyBuilder>)>();
 
         internal ConcurrentDictionary<string, IList<PropertyBuilder>> ColumnSetsDict { get; } = new ConcurrentDictionary<string, IList<PropertyBuilder>>();
-
-        public EntityTypeBuilder ToTable(string name)
-        {
-            TableName = name;
-            return this;
-        }
 
         public PropertyBuilder FindProperty(string name, Type adapter = null)
         {
@@ -52,16 +47,6 @@ namespace Dapper.SqlGenerator
             });
             
             return adapter == null ? sharedProperty : adapters.GetOrAdd(adapter, _ => new PropertyBuilder(sharedProperty));
-        }
-
-        public EntityTypeBuilder HasKey(params string[] names)
-        {
-            foreach (var name in names)
-            {
-                Property(name).IsKey = true;
-            }
-
-            return this;
         }
     }
 
@@ -108,46 +93,27 @@ namespace Dapper.SqlGenerator
                 return true;
             }
         }
+
+        public EntityTypeBuilder<TEntity> HasColumnSet(string name, Type adapter, params string[] columns)
+        {
+            ColumnSetsDict[name] = columns.Select(x => Property(x, adapter)).ToList();
+            return this;
+        }
         
-        public EntityTypeBuilder<TEntity> ToTable<TProperty>(Expression<Func<TEntity, TProperty>> expression)
+        public EntityTypeBuilder<TEntity> HasColumnSet(string name, params string[] columns)
         {
-            ToTable(GetMemberName(expression));
+            return HasColumnSet(name, null, columns);
+        }
+        
+        public EntityTypeBuilder<TEntity> HasColumnSet(string name, Type adapter, params Expression<Func<TEntity, object>>[] columns)
+        {
+            ColumnSetsDict[name] = columns.Select(x => Property(Helpers.GetMemberName(x), adapter)).ToList();
             return this;
         }
-
-        public PropertyBuilder Property<TProperty>(Expression<Func<TEntity, TProperty>> expression, Type adapter = null)
-        {
-            return Property(GetMemberName(expression), adapter);
-        }
-
-        public void Ignore<TProperty>(Expression<Func<TEntity, TProperty>> expression, Type adapter = null)
-        {
-            Property(GetMemberName(expression), adapter).Ignore();
-        }
-
-        public EntityTypeBuilder<TEntity> HasKey<TProperty>(Expression<Func<TEntity, TProperty>> expression)
-        {
-            HasKey(GetMemberName(expression));
-            return this;
-        }
-
+        
         public EntityTypeBuilder<TEntity> HasColumnSet(string name, params Expression<Func<TEntity, object>>[] columns)
         {
-            ColumnSetsDict[name] = columns.Select(x => Property(GetMemberName(x))).ToList();
-            return this;
-        }
-
-        private static string GetMemberName<T>(Expression<T> expression)
-        {
-            switch (expression.Body)
-            {
-                case MemberExpression m:
-                    return m.Member.Name;
-                case UnaryExpression u when u.Operand is MemberExpression m:
-                    return m.Member.Name;
-                default:
-                    throw new NotImplementedException(expression.GetType().ToString());
-            }
+            return HasColumnSet(name, null, columns);
         }
     }
 }

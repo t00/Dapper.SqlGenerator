@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Dapper.SqlGenerator
 {
@@ -54,6 +53,11 @@ namespace Dapper.SqlGenerator
             return columnCache.GetOrAdd((nameof(GetProperties), typeof(TEntity), selection, columnSet), key => SelectColumns<TEntity>(selection, columnSet).ToList());
         }
 
+        IEnumerable<IProperty> ISql.GetProperties<TEntity>(ColumnSelection selection, string columnSet)
+        {
+            return GetProperties<TEntity>(selection, columnSet);
+        }
+
         public string GetColumns<TEntity>(ColumnSelection selection, string columnSet = null, string separator = ",")
         {
             return string.Join(separator, GetProperties<TEntity>(selection, columnSet).Select(x => Adapter.GetColumn(x, selection)).Where(x => x != null));
@@ -68,7 +72,7 @@ namespace Dapper.SqlGenerator
         {
             return string.Join(separator, GetProperties<TEntity>(selection, columnSet).Select(x => Adapter.GetColumnEqualParam(x, selection)).Where(x => x != null));
         }
-        
+
         public string Insert<TEntity>(bool insertKeys = false, string columnSet = null)
         {
             return CacheQuery<TEntity>($"{nameof(Insert)}_{insertKeys}_{columnSet}", () =>

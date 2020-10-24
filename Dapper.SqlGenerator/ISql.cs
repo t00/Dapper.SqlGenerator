@@ -18,7 +18,7 @@ namespace Dapper.SqlGenerator
         /// <param name="columnSet">Named set of columns defined for a table</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>List of columns with their properties</returns>
-        IList<PropertyBuilder> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select, string columnSet = null);
+        IEnumerable<IProperty> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select, string columnSet = null);
 
         /// <summary>
         /// Gets a comma separated list of SQL column expressions for the table

@@ -104,7 +104,7 @@ namespace Dapper.SqlGenerator.Adapters
                     name = converter.Convert(name);
                 }
 
-                table.ToTable(name);
+                table.TableName = name;
             }
 
             return EscapeTableName(table.TableName);
