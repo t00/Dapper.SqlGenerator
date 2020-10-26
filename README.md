@@ -27,20 +27,34 @@ Simplest use case does not require any initialization - just use the following m
 
     using Dapper.SqlGenerator;
     
+    // returns INSERT query
     string insertSql = connection.Sql().Insert<Product>();
+    
+    // returns INSERT query which returns inserted key columns
     string insertAndReturnSql = connection.Sql().InsertReturn<Product>();
+    
+    // returns UPDATE query filtered by key columns
     string updateSql = connection.Sql().Update<Product>();
+    
+    // returns DELETE query filtered by key columns
     string deleteSql = connection.Sql().Delete<Product>();
-    string upsertMergeSql = connection.Sql().Merge<Product>("unique_order");
 
+    // returns escaped table name, using name converters for the connection database type
     string tableName = connection.Sql().Table<Order>();
 
-    string commaSeparatedNonKeyColumns = connection.Sql().GetColumns<Order>(ColumnSelection.NonKeys);
+    // returns comma separated list of non-key columns, including calculated columns
+    string commaSeparatedNonKeyColumns = connection.Sql().GetColumns<Order>(ColumnSelection.NonKeys | ColumnSelection.Computed);
+    
+    // returns comma separated parameters for keys only
     string keysAtQueryParams = connection.Sql().GetParams<Order>(ColumnSelection.Keys);
+    
+    // returns comma separated assigmnents Column=@Column for non-key columns
     string columnEqualParams = connection.Sql().GetColumnEqualParams<Order>(ColumnSelection.NonKeys);
     
     DapperSqlGenerator.Configure().Entity<Order>.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
     IList<IProperty> uniqueColumns = connection.Sql().GetProperties<Order>(ColumnSelection.Select, 'unique_order');
+    
+    string upsertMergeSql = connection.Sql().Merge<Order>("unique_order");
 
 There is no SELECT query available - GetColumns will generate comma generated columns.
 
