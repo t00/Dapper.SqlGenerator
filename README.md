@@ -74,8 +74,8 @@ Example for 2 entities:
 
 SqlGenerator can pick the correct database adapter based on the IDbConnection type or even optionally by it's connection string to handle selection of schema.
 
-There are several table and column name converters available, all written for with realisting scenarios so that there should be no need to use ToTable or HasColumnName specialzations very often.
-All can be joined together in any order to produce the expected outcome.
+There are several table and column name converters available, all written for with realistic scenarios in mind so that there should be no need to use ToTable or HasColumnName specialzations very often.
+Name converters can be joined together in any order to produce the expected outcome.
 
  - CamelCaseNameConverter - PropertyName becomes propertyName
  - LowerCaseNameConverter - PropertyName becomes propertyname
@@ -85,4 +85,16 @@ All can be joined together in any order to produce the expected outcome.
 
 To register existing or custom adapter, use AdapterFactory:
 
-    AdapterFactory.Register(typeof(NpgsqlConnection), new PostgresAdapter(new INameConverter[] { new SnakeCaseNameConverter(), new LowerCaseNameConverter(), new PluralNameConverter() }, new INameConverter[] { new LowerCaseNameConverter() });
+    AdapterFactory.Register(
+        typeof(NpgsqlConnection),
+        new PostgresAdapter(new INameConverter[]
+        {
+            new SnakeCaseNameConverter(),
+            new LowerCaseNameConverter(),
+            new PluralNameConverter()
+        },
+        new INameConverter[]
+        {
+            new LowerCaseNameConverter()
+        }
+    );
