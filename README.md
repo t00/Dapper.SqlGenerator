@@ -77,11 +77,11 @@ SqlGenerator can pick the correct database adapter based on the IDbConnection ty
 There are several table and column name converters available, all written for with realistic scenarios in mind so that there should be no need to use ToTable or HasColumnName specialzations very often.
 Name converters can be joined together in any order to produce the expected outcome.
 
- - CamelCaseNameConverter - PropertyName becomes propertyName
- - LowerCaseNameConverter - PropertyName becomes propertyname
- - UpperCaseNameConverter - PropertyName becomes PROPERTYNAME
- - SnakeCaseNameConverter - PropertyNAME becomes Property_NAME
- - PluralNameConverter - Grape becomes Grapes
+ - ```CamelCaseNameConverter``` - _PropertyName_ becomes _propertyName_
+ - ```LowerCaseNameConverter``` - _PropertyName_ becomes _propertyname_
+ - ```UpperCaseNameConverter``` - _PropertyName_ becomes _PROPERTYNAME_
+ - ```SnakeCaseNameConverter``` - _PropertyNAME_ becomes _Property_NAME_
+ - ```PluralNameConverter``` - _Grape_ becomes _Grapes_ but _Settings_ remains _Settings_
 
 To register existing or custom adapter, use AdapterFactory:
 
