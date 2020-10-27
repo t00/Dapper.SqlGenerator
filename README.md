@@ -9,21 +9,9 @@ One of the project aims is performance - generated queries are cached as well as
 
 Currently only NpgsqlConnection and SqlConnection are supported but writing a custom adapter is very simple and requires only implementing ISqlAdapter interface and registering it.
 
-Project will aim to eventually be fully compatible with Entity Framework Core schema definition. To crate mappings for an existing database use the following command:
+The Id column by default is assumed to be a key as it is rarely a case when generic Id property is not a key.
 
-    dotnet ef dbcontext scaffold "Server=.\SQLEXPRESS;Database=MyDb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
-
-In the generated schema definitions remove Entity Framework namespaces and initialize SqlGenerator with generated schema:
-
-    using Dapper.SqlGenerator;
-    using Dapper.SqlGenerator.Extensions;
-
-    void InitSqlGenerator()
-    {
-        OnModelCreating(DapperSqlGenerator.Configure());
-    }
-
-Simplest use case does not require any initialization - just use the following methods on the IDbConnection:
+Simplest use case does not require any initialization - use the following methods on the IDbConnection:
 
     using Dapper.SqlGenerator;
     
@@ -51,12 +39,15 @@ Simplest use case does not require any initialization - just use the following m
     // returns comma separated assigmnents Column=@Column for non-key columns
     string columnEqualParams = connection.Sql().GetColumnEqualParams<Order>(ColumnSelection.NonKeys);
     
+Using merge (also called upsert) needs a defined set of columns by which row uniqueness is determined:
+
     DapperSqlGenerator.Configure().Entity<Order>.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
-    IList<IProperty> uniqueColumns = connection.Sql().GetProperties<Order>(ColumnSelection.Select, 'unique_order');
-    
     string upsertMergeSql = connection.Sql().Merge<Order>("unique_order");
 
-There is no SELECT query available - GetColumns will generate comma generated columns.
+Column sets can be used to narrow down the list of inserted or updated columns as well:
+
+    IList<IProperty> uniqueColumns = connection.Sql().GetProperties<Order>(ColumnSelection.Select, "unique_order");
+    string uniqueOrderColumns = connection.Sql().GetColumns<Order>(ColumnSelection.Select, "unique_order");
 
 On program initialization special naming or key column rules can be defined which will be handled by SqlGenerator.
 
@@ -87,6 +78,20 @@ Example for 2 entities:
         });
 
 SqlGenerator can pick the correct database adapter based on the IDbConnection type or even optionally by it's connection string to handle selection of schema.
+
+Project will aim to eventually be fully compatible with Entity Framework Core schema definition. To crate mappings for an existing database use the following command:
+
+    dotnet ef dbcontext scaffold "Server=.\SQLEXPRESS;Database=MyDb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
+
+In the generated schema definitions remove Entity Framework namespaces and initialize SqlGenerator with generated schema:
+
+    using Dapper.SqlGenerator;
+    using Dapper.SqlGenerator.Extensions;
+
+    void InitSqlGenerator()
+    {
+        OnModelCreating(DapperSqlGenerator.Configure());
+    }
 
 There are several table and column name converters available, all written for with realistic scenarios in mind so that there should be no need to use ToTable or HasColumnName specialzations very often.
 Name converters can be joined together in any order to produce the expected outcome.
