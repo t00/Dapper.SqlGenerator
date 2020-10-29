@@ -32,6 +32,8 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
         public TimeSpan Duration { get; set; }
 
         public bool Last { get; set; }
+        
+        public ICollection<TestOrder> Orders { get; set; }
     }
 
     internal enum TestEnum

@@ -35,6 +35,10 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
                 e.Property(c => c.OrderId)
                     .HasColumnName("Id");
                 e.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
+                // dummy definition to ensure properties are present
+                e.HasOne(d => d.Product)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.ProductId);
             });
         }
 

@@ -3,6 +3,8 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
     internal class TestOrder
     {
         public int OrderId { get; set; }
+        
+        public TestProduct Product { get; set; } 
 
         public int ProductId { get; set; }
         
