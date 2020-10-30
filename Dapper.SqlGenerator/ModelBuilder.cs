@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Dapper.SqlGenerator
 {
@@ -39,7 +40,31 @@ namespace Dapper.SqlGenerator
         {
             return Adapter.GetTableName(EnsureEntity<TEntity>());
         }
-        
+
+        public ISql HasColumnSet<TEntity>(string name, Type adapter, params string[] columns)
+        {
+            EnsureEntity<TEntity>().HasColumnSet(name, adapter, columns);
+            return this;
+        }
+
+        public ISql HasColumnSet<TEntity>(string name, params string[] columns)
+        {
+            EnsureEntity<TEntity>().HasColumnSet(name, columns);
+            return this;
+        }
+
+        public ISql HasColumnSet<TEntity>(string name, Type adapter, params Expression<Func<TEntity, object>>[] columns)
+        {
+            EnsureEntity<TEntity>().HasColumnSet(name, adapter, columns);
+            return this;
+        }
+
+        public ISql HasColumnSet<TEntity>(string name, params Expression<Func<TEntity, object>>[] columns)
+        {
+            EnsureEntity<TEntity>().HasColumnSet(name, columns);
+            return this;
+        }
+
         public ModelBuilder HasDefaultKeyColumn(string propertyName, Action<PropertyBuilder> options = null, Type adapter = null)
         {
             var property = Shared.Property(propertyName, adapter);

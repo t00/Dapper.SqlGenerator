@@ -1,16 +1,31 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Dapper.SqlGenerator
 {
     public interface ISql
     {
         /// <summary>
+        /// Gets the adapter associated with the schema definition
+        /// </summary>
+        ISqlAdapter Adapter { get; }
+
+        /// <summary>
         /// Gets the escaped table name 
         /// </summary>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>SQL column name</returns>
         string Table<TEntity>();
+
+        ISql HasColumnSet<TEntity>(string name, Type adapter, params string[] columns);
         
+        ISql HasColumnSet<TEntity>(string name, params string[] columns);
+
+        ISql HasColumnSet<TEntity>(string name, Type adapter, params Expression<Func<TEntity, object>>[] columns);
+
+        ISql HasColumnSet<TEntity>(string name, params Expression<Func<TEntity, object>>[] columns);
+
         /// <summary>
         /// Gets a list of columns present in the table
         /// </summary>
