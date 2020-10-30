@@ -36,7 +36,7 @@ namespace Dapper.SqlGenerator.Adapters
                    && (property.ComputedColumnSql == null || selection.HasFlag(ColumnSelection.Computed));
         }
 
-        public virtual string GetColumn(PropertyBuilder property, ColumnSelection selection)
+        public virtual string GetColumn(PropertyBuilder property, ColumnSelection selection, string alias)
         {
             var escapedName = EscapeColumnName(property.Name);
             if (property.ComputedColumnSql != null)
@@ -45,12 +45,13 @@ namespace Dapper.SqlGenerator.Adapters
             }
 
             var escapedColumnName = GetColumnName(property);
+            var aliasedColumnName = alias != null ? $"{alias}.{escapedColumnName}" : escapedColumnName;
             if (escapedColumnName != escapedName && !selection.HasFlag(ColumnSelection.Write))
             {
-                return $"{escapedColumnName} AS {escapedName}";
+                return $"{aliasedColumnName} AS {escapedName}";
             }
 
-            return escapedColumnName;
+            return aliasedColumnName;
         }
 
         public virtual string GetParam(PropertyBuilder property, ColumnSelection selection)
@@ -65,9 +66,14 @@ namespace Dapper.SqlGenerator.Adapters
             }
         }
 
-        public virtual string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection)
+        public virtual string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection, string alias)
         {
             var escapedColumnName = GetColumnName(property);
+            if (alias != null)
+            {
+                escapedColumnName = $"{alias}.{escapedColumnName}";
+            }
+
             if (property.ColumnType != null)
             {
                 return $"{escapedColumnName}=CAST(@{property.Name} AS {property.ColumnType})";
@@ -137,9 +143,9 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append("INSERT INTO ");
             sb.Append(GetTableName(table));
             sb.Append(" (");
-            sb.Append(modelBuilder.GetColumns<TEntity>(selection, columnSet));
+            sb.Append(modelBuilder.GetColumns<TEntity>(columnSet, selection));
             sb.Append(") VALUES (");
-            sb.Append(modelBuilder.GetParams<TEntity>(selection, columnSet));
+            sb.Append(modelBuilder.GetParams<TEntity>(columnSet, selection));
             sb.Append(")");
         }
         
@@ -148,9 +154,9 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append("UPDATE ");
             sb.Append(GetTableName(table));
             sb.Append(" SET ");
-            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write, columnSet));
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(columnSet, ColumnSelection.NonKeys | ColumnSelection.Write));
             sb.Append(" WHERE ");
-            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(null, ColumnSelection.Keys | ColumnSelection.Write));
         }
         
         protected void AddDelete<TEntity>(StringBuilder sb, ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table)
@@ -158,7 +164,7 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append("DELETE FROM ");
             sb.Append(GetTableName(table));
             sb.Append(" WHERE ");
-            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.Keys | ColumnSelection.Write));
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(null, ColumnSelection.Keys | ColumnSelection.Write));
         }
     }
 }

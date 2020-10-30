@@ -38,8 +38,9 @@ namespace Dapper.SqlGenerator
         /// </summary>
         /// <param name="property">Table property</param>
         /// <param name="selection">Column selection</param>
+        /// <param name="alias">Table alias</param>
         /// <returns>Escaped column name or null if not available</returns>
-        string GetColumn(PropertyBuilder property, ColumnSelection selection);
+        string GetColumn(PropertyBuilder property, ColumnSelection selection, string alias);
         
         /// <summary>
         /// Gets the @Parameter to substitute column value
@@ -48,14 +49,15 @@ namespace Dapper.SqlGenerator
         /// <param name="selection">Column selection</param>
         /// <returns>Parameter or null if not available</returns>
         string GetParam(PropertyBuilder property, ColumnSelection selection);
-        
+
         /// <summary>
         /// Gets Column=@Parameter or Column=Sql Expression
         /// </summary>
         /// <param name="property">Table property</param>
         /// <param name="selection">Column selection</param>
+        /// <param name="alias">Table alias</param>
         /// <returns>Expression or null if not available</returns>
-        string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection);
+        string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection, string alias);
 
         /// <summary>
         /// Returns true if the type on the object can be used in SQL expressions

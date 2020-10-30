@@ -3,6 +3,20 @@ namespace Dapper.SqlGenerator
     public interface ISqlAdapter : IBaseSqlAdapter
     {
         /// <summary>
+        /// Prepares a SELECT query
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        /// <param name="table"></param>
+        /// <param name="columnSet"></param>
+        /// <param name="columnSelection"></param>
+        /// <param name="whereSet"></param>
+        /// <param name="whereSelection"></param>
+        /// <param name="alias"></param>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        string Select<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet, ColumnSelection columnSelection, string whereSet, ColumnSelection whereSelection, string alias);
+
+        /// <summary>
         /// Inserts a row
         /// </summary>
         /// <param name="modelBuilder"></param>

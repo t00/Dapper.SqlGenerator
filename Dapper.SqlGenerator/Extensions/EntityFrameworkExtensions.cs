@@ -11,12 +11,6 @@ namespace Dapper.SqlGenerator.Extensions
             return builder;
         }
 
-        public static EntityTypeBuilder<TEntity> ToTable<TEntity, TProperty>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, TProperty>> expression)
-        {
-            builder.TableName = Helpers.GetMemberName(expression);
-            return builder;
-        }
-
         public static PropertyBuilder Property<TEntity, TProperty>(this EntityTypeBuilder<TEntity> builder, Expression<Func<TEntity, TProperty>> expression, Type adapter = null)
         {
             return builder.Property(Helpers.GetMemberName(expression), adapter);

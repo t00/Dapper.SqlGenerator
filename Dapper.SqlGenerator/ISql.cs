@@ -33,17 +33,18 @@ namespace Dapper.SqlGenerator
         /// <param name="columnSet">Named set of columns defined for a table</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>List of columns with their properties</returns>
-        IEnumerable<IProperty> GetProperties<TEntity>(ColumnSelection selection = ColumnSelection.Select, string columnSet = null);
+        IEnumerable<IProperty> GetProperties<TEntity>(string columnSet = null, ColumnSelection selection = ColumnSelection.Select);
 
         /// <summary>
         /// Gets a comma separated list of SQL column expressions for the table
         /// </summary>
         /// <param name="selection">Column selection and purpose, see <see cref="ColumnSelection"/></param>
         /// <param name="columnSet">Named set of columns defined for a table</param>
+        /// <param name="alias">Table alias to prefix non-computed columns with</param>
         /// <param name="separator">Column separator, comma by default</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>Comma separated list of </returns>
-        string GetColumns<TEntity>(ColumnSelection selection, string columnSet = null, string separator = ",");
+        string GetColumns<TEntity>(string columnSet = null, ColumnSelection selection = ColumnSelection.Select, string alias = null, string separator = ",");
 
         /// <summary>
         /// 
@@ -53,17 +54,46 @@ namespace Dapper.SqlGenerator
         /// <param name="separator">Column separator, comma by default</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns></returns>
-        string GetParams<TEntity>(ColumnSelection selection, string columnSet = null, string separator = ",");
+        string GetParams<TEntity>(string columnSet = null, ColumnSelection selection = ColumnSelection.Select, string separator = ",");
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="selection">Column selection and purpose, see <see cref="ColumnSelection"/></param>
         /// <param name="columnSet">Named set of columns defined for a table</param>
+        /// <param name="alias">Table alias to prefix non-computed columns with</param>
         /// <param name="separator">Column separator, comma by default</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns></returns>
-        string GetColumnEqualParams<TEntity>(ColumnSelection selection, string columnSet = null, string separator = ",");
+        string GetColumnEqualParams<TEntity>(string columnSet = null, ColumnSelection selection = ColumnSelection.Select, string alias = null, string separator = ",");
+
+        /// <summary>
+        /// Gets the SELECT query with an optional table alias
+        /// </summary>
+        /// <param name="columnSet">Named set of columns to select</param>
+        /// <param name="alias">Optional table alias</param>
+        /// <typeparam name="TEntity">Table type</typeparam>
+        /// <returns>SQL SELECT expression</returns>
+        string Select<TEntity>(string columnSet = null, string alias = null);
+
+        /// <summary>
+        /// Gets the SELECT query with WHERE from given key parameters, with an optional table alias
+        /// </summary>
+        /// <param name="columnSet">Named set of columns to select</param>
+        /// <param name="alias">Optional table alias</param>
+        /// <typeparam name="TEntity">Table type</typeparam>
+        /// <returns>SQL SELECT expression</returns>
+        string SelectSingle<TEntity>(string columnSet = null, string alias = null);
+
+        /// <summary>
+        /// Gets the SELECT query with WHERE from arbitrary column parameters, with an optional table alias
+        /// </summary>
+        /// <param name="whereSet">Named set of columns to filter by</param>
+        /// <param name="columnSet">Named set of columns to select</param>
+        /// <param name="alias">Optional table alias</param>
+        /// <typeparam name="TEntity">Table type</typeparam>
+        /// <returns>SQL SELECT expression</returns>
+        string SelectWhere<TEntity>(string whereSet, string columnSet = null, string alias = null);
 
         /// <summary>
         /// Gets the INSERT expression on the given table with named parameters
@@ -72,7 +102,7 @@ namespace Dapper.SqlGenerator
         /// <param name="columnSet">Named set of columns to insert</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>SQL INSERT expression</returns>
-        string Insert<TEntity>(bool insertKeys = false, string columnSet = null);
+        string Insert<TEntity>(string columnSet = null, bool insertKeys = false);
 
         /// <summary>
         /// Gets the INSERT expression on the given table with named parameters
@@ -82,7 +112,7 @@ namespace Dapper.SqlGenerator
         /// <param name="columnSet">Named set of columns to insert</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>SQL INSERT expression returning inserted key values</returns>
-        string InsertReturn<TEntity>(bool insertKeys = false, string columnSet = null);
+        string InsertReturn<TEntity>(string columnSet = null, bool insertKeys = false);
 
         /// <summary>
         /// Gets the UPDATE expression on the given table with named parameters of records identified by keys
@@ -107,6 +137,6 @@ namespace Dapper.SqlGenerator
         /// <param name="columnSet">A set of columns to insert or update</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>INSERT OR UPDATE expression dependent on the database used</returns>
-        string Merge<TEntity>(string mergeSet, bool insertKeys = false, string columnSet = null);
+        string Merge<TEntity>(string mergeSet, string columnSet = null, bool insertKeys = false);
     }
 }

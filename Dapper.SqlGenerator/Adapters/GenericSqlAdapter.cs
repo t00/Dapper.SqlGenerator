@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
@@ -24,6 +23,28 @@ namespace Dapper.SqlGenerator.Adapters
             return $"\"{name}\"";
         }
 
+        public string Select<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet, ColumnSelection columnSelection, string whereSet, ColumnSelection whereSelection, string alias)
+        {
+            var sb = new StringBuilder();
+            sb.Append("SELECT ");
+            sb.Append(modelBuilder.GetColumns<TEntity>(columnSet, columnSelection, alias));
+            sb.Append(" FROM ");
+            sb.Append(GetTableName(table));
+            if (alias != null)
+            {
+                sb.Append(" ");
+                sb.Append(alias);
+            }
+
+            if (whereSelection != ColumnSelection.None)
+            {
+                sb.Append(" WHERE ");
+                sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(whereSet, whereSelection, alias, " AND "));
+            }
+
+            return sb.ToString();
+        }
+
         public virtual string Insert<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
         {
             var sb = new StringBuilder();
@@ -36,14 +57,14 @@ namespace Dapper.SqlGenerator.Adapters
             var sb = new StringBuilder();
             AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
             sb.Append(" RETURNING ");
-            sb.Append(modelBuilder.GetColumns<TEntity>(ColumnSelection.Keys));
+            sb.Append(modelBuilder.GetColumns<TEntity>(null, ColumnSelection.Keys));
             return sb.ToString();
         }
 
         public virtual string Update<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet)
         {
             var sb = new StringBuilder();
-            AddUpdate(sb, modelBuilder, table);
+            AddUpdate(sb, modelBuilder, table, columnSet);
             return sb.ToString();
         }
 
@@ -60,14 +81,14 @@ namespace Dapper.SqlGenerator.Adapters
             var mergeSelection = ColumnSelection.Keys | ColumnSelection.NonKeys | ColumnSelection.Write;
             AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
             sb.Append(" ON CONFLICT(");
-            sb.Append(modelBuilder.GetColumns<TEntity>(mergeSelection, mergeSet));
+            sb.Append(modelBuilder.GetColumns<TEntity>(mergeSet, mergeSelection));
             sb.Append(") DO ");
             sb.Append("UPDATE ");
             sb.Append(GetTableName(table));
             sb.Append(" SET ");
-            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(ColumnSelection.NonKeys | ColumnSelection.Write, columnSet));
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(columnSet, ColumnSelection.NonKeys | ColumnSelection.Write));
             sb.Append(" WHERE ");
-            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(mergeSelection, mergeSet, " AND "));
+            sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(mergeSet, mergeSelection, null, " AND "));
             return sb.ToString();
         }
     }
