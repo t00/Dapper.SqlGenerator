@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlGenerator", "Dapp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlGenerator.Tests", "Dapper.SqlGenerator.Tests\Dapper.SqlGenerator.Tests.csproj", "{E14DE66C-2BE0-4DF1-A1DB-AB641F6252A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlGenerator.Async", "Dapper.SqlGenerator.Async\Dapper.SqlGenerator.Async.csproj", "{05B87D1C-516C-4CEC-89D7-2E1F073E5356}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.SqlGenerator.Async.Tests", "Dapper.SqlGenerator.Async.Tests\Dapper.SqlGenerator.Async.Tests.csproj", "{FBF3D80F-432B-403D-B0D9-2153242430CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +48,29 @@ Global
 		{E14DE66C-2BE0-4DF1-A1DB-AB641F6252A3}.Release|x64.Build.0 = Release|Any CPU
 		{E14DE66C-2BE0-4DF1-A1DB-AB641F6252A3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E14DE66C-2BE0-4DF1-A1DB-AB641F6252A3}.Release|x86.Build.0 = Release|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Debug|x64.Build.0 = Debug|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Debug|x86.Build.0 = Debug|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Release|x64.ActiveCfg = Release|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Release|x64.Build.0 = Release|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Release|x86.ActiveCfg = Release|Any CPU
+		{05B87D1C-516C-4CEC-89D7-2E1F073E5356}.Release|x86.Build.0 = Release|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Debug|x64.Build.0 = Debug|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Debug|x86.Build.0 = Debug|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Release|x64.ActiveCfg = Release|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Release|x64.Build.0 = Release|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Release|x86.ActiveCfg = Release|Any CPU
+		{FBF3D80F-432B-403D-B0D9-2153242430CC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
