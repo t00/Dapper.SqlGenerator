@@ -1,8 +1,6 @@
 using System;
 using System.Data.SQLite;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper.SqlGenerator.Extensions;
 using Dapper.SqlGenerator.Tests.TestClasses;
@@ -51,10 +49,7 @@ namespace Dapper.SqlGenerator.Async.Tests
             Assert.AreNotEqual(p1.Id, idProduct.Id);
             p1.Id = idProduct.Id;
 
-            var select = connection.Sql().Select<TestProduct>();
-            var test = (await connection.QueryAsync(select)).ToList();
-
-            var loadedP1 = await connection.QuerySingleAsync<TestProduct>(select, idProduct);
+            var loadedP1 = await connection.SelectSingleAsync<TestProduct>(new { idProduct.Id });
             Assert.AreEqual(p1.Kind, loadedP1.Kind);
             Assert.AreEqual(null, loadedP1.Name);
             Assert.AreEqual(p1.Content, loadedP1.Content);
