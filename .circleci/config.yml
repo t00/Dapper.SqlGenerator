@@ -21,7 +21,7 @@
           key: dotnet-packages-v1-{{ checksum "Dapper.SqlGenerator/Dapper.SqlGenerator.csproj" }}
       - run:
           name: "Run Application Tests"
-          command: dotnet test -v n --results-directory:TestResults --collect:"Code Coverage" --test-adapter-path:. --logger:"junit;LogFilePath={assembly}-TestResults.xml"
+          command: dotnet test -v n --results-directory:. --collect:"Code Coverage" --test-adapter-path:. --logger:"junit;LogFilePath=..\TestResults\{assembly}.xml"
       - store_test_results:
           path: C:\Users\circleci\project\TestResults
       - store_artifacts:
