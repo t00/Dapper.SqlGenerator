@@ -24,9 +24,9 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var cols = connection.Sql().GetColumns<TestProduct>(null, ColumnSelection.Select);
-            Assert.AreEqual("\"id\" AS \"Id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\"", cols);
+            Assert.AreEqual("\"id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\"", cols);
             cols = connection.Sql().GetColumns<TestProduct>(null, ColumnSelection.Keys);
-            Assert.AreEqual("\"id\" AS \"Id\"", cols, "Keys");
+            Assert.AreEqual("\"id\"", cols, "Keys");
             cols = connection.Sql().GetColumns<TestProduct>(null, ColumnSelection.NonKeys | ColumnSelection.Computed);
             Assert.AreEqual("\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\"", cols, "NonKeys");
         }
@@ -60,7 +60,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var select = connection.Sql().Select<TestProduct>();
-            Assert.AreEqual("SELECT \"id\" AS \"Id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\" FROM \"TestProducts\"", select);
+            Assert.AreEqual("SELECT \"id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\" FROM \"TestProducts\"", select);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var select = connection.Sql().Select<TestProduct>(null, "ko");
-            Assert.AreEqual("SELECT ko.\"id\" AS \"Id\",ko.\"Type\" AS \"Kind\",ko.\"Content\",\"Id\" + 1 AS \"Value\",ko.\"Enum\",ko.\"MaybeDate\",ko.\"Date\",ko.\"MaybeGuid\",ko.\"Guid\",ko.\"Duration\",ko.\"Last\" FROM \"TestProducts\" ko", select);
+            Assert.AreEqual("SELECT ko.\"id\",ko.\"Type\" AS \"Kind\",ko.\"Content\",\"Id\" + 1 AS \"Value\",ko.\"Enum\",ko.\"MaybeDate\",ko.\"Date\",ko.\"MaybeGuid\",ko.\"Guid\",ko.\"Duration\",ko.\"Last\" FROM \"TestProducts\" ko", select);
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace Dapper.SqlGenerator.Tests
             var connection = new NpgsqlConnection();
             connection.Sql().HasColumnSet<TestProduct>("TestSelectColumnSet", x => x.Id, x => x.Kind, x => x.Value, x => x.Content, x => x.Last);
             var select = connection.Sql().Select<TestProduct>("TestSelectColumnSet");
-            Assert.AreEqual("SELECT \"id\" AS \"Id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Last\" FROM \"TestProducts\"", select);
+            Assert.AreEqual("SELECT \"id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Last\" FROM \"TestProducts\"", select);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var select = connection.Sql().SelectSingle<TestProduct>();
-            Assert.AreEqual("SELECT \"id\" AS \"Id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\" FROM \"TestProducts\" WHERE \"id\"=@Id", select);
+            Assert.AreEqual("SELECT \"id\",\"Type\" AS \"Kind\",\"Content\",\"Id\" + 1 AS \"Value\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\" FROM \"TestProducts\" WHERE \"id\"=@Id", select);
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace Dapper.SqlGenerator.Tests
             connection.Sql().HasColumnSet<TestProduct>("TestSelectWhere", x => x.Id, x => x.Kind);
             connection.Sql().HasColumnSet<TestProduct>("TestSelectWhere_SELECT", x => x.Id, x => x.Kind, x => x.Value, x => x.Content, x => x.Last);
             var select = connection.Sql().SelectWhere<TestProduct>("TestSelectWhere", "TestSelectWhere_SELECT", "x");
-            Assert.AreEqual("SELECT x.\"id\" AS \"Id\",x.\"Type\" AS \"Kind\",x.\"Content\",\"Id\" + 1 AS \"Value\",x.\"Last\" FROM \"TestProducts\" x WHERE x.\"id\"=@Id AND x.\"Type\"=@Kind", select);
+            Assert.AreEqual("SELECT x.\"id\",x.\"Type\" AS \"Kind\",x.\"Content\",\"Id\" + 1 AS \"Value\",x.\"Last\" FROM \"TestProducts\" x WHERE x.\"id\"=@Id AND x.\"Type\"=@Kind", select);
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var cols = connection.Sql().InsertReturn<TestProduct>();
-            Assert.AreEqual("INSERT INTO \"TestProducts\" (\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last) RETURNING \"id\" AS \"Id\"", cols);
+            Assert.AreEqual("INSERT INTO \"TestProducts\" (\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last) RETURNING \"id\"", cols);
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var cols = connection.Sql().InsertReturn<TestProduct>(null, true);
-            Assert.AreEqual("INSERT INTO \"TestProducts\" (\"id\",\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Id,@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last) RETURNING \"id\" AS \"Id\"", cols);
+            Assert.AreEqual("INSERT INTO \"TestProducts\" (\"id\",\"Type\",\"Content\",\"Enum\",\"MaybeDate\",\"Date\",\"MaybeGuid\",\"Guid\",\"Duration\",\"Last\") VALUES (@Id,@Kind,CAST(@Content AS json),@Enum,@MaybeDate,@Date,@MaybeGuid,@Guid,@Duration,@Last) RETURNING \"id\"", cols);
         }
         
         [Test]

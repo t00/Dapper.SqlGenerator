@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Dapper.SqlGenerator.Adapters
 {
@@ -12,6 +13,22 @@ namespace Dapper.SqlGenerator.Adapters
         public override string TableExists()
         {
             return "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@table";
+        }
+        
+        public override string InsertReturn<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, bool insertKeys, string columnSet)
+        {
+            var sb = new StringBuilder();
+            AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
+            sb.Append("; SELECT last_insert_rowid() AS ");
+
+            var keyColumns = modelBuilder.GetProperties<TEntity>(ColumnSelection.Keys);
+            if (keyColumns.Count != 1)
+            {
+                throw new InvalidOperationException("Only 1 key column supported");
+            }
+
+            sb.Append(modelBuilder.Adapter.EscapeColumnName(keyColumns[0].Name));
+            return sb.ToString();
         }
     }
 }

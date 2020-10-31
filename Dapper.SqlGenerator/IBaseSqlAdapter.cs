@@ -24,7 +24,7 @@ namespace Dapper.SqlGenerator
         /// <param name="escaped">If true, table name will be escaped</param>
         /// <typeparam name="TEntity">Table entity type</typeparam>
         /// <returns>Escaped table name</returns>
-        string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table, bool escaped);
+        string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table, bool escaped = true);
         
         /// <summary>
         /// Checks if column is included in selection
@@ -41,7 +41,7 @@ namespace Dapper.SqlGenerator
         /// <param name="selection">Column selection</param>
         /// <param name="alias">Table alias</param>
         /// <returns>Escaped column name or null if not available</returns>
-        string GetColumn(PropertyBuilder property, ColumnSelection selection, string alias);
+        string GetColumn(PropertyBuilder property, ColumnSelection selection, string alias = null);
         
         /// <summary>
         /// Gets the @Parameter to substitute column value
@@ -58,7 +58,7 @@ namespace Dapper.SqlGenerator
         /// <param name="selection">Column selection</param>
         /// <param name="alias">Table alias</param>
         /// <returns>Expression or null if not available</returns>
-        string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection, string alias);
+        string GetColumnEqualParam(PropertyBuilder property, ColumnSelection selection, string alias = null);
 
         /// <summary>
         /// Returns true if the type on the object can be used in SQL expressions

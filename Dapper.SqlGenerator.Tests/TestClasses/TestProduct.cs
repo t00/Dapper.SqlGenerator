@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Dapper.SqlGenerator.Tests.TestClasses
 {
-    internal class TestProduct
+    public class TestProduct
     {
         public int Id { get; set; }
             
@@ -36,7 +36,7 @@ namespace Dapper.SqlGenerator.Tests.TestClasses
         public ICollection<TestOrder> Orders { get; set; }
     }
 
-    internal enum TestEnum
+    public enum TestEnum
     {
         None,
         Some = 1,

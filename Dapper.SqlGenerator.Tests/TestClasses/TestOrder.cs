@@ -1,6 +1,6 @@
 namespace Dapper.SqlGenerator.Tests.TestClasses
 {
-    internal class TestOrder
+    public class TestOrder
     {
         public int OrderId { get; set; }
         

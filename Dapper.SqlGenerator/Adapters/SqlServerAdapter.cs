@@ -55,10 +55,17 @@ namespace Dapper.SqlGenerator.Adapters
                     sb.Append(',');
                 }
                 
-                if (property.ColumnName != null && property.ColumnName != property.Name)
+                if (property.ColumnName != null)
                 {
                     var escapedColumnName = EscapeColumnName(property.ColumnName);
-                    sb.Append($"INSERTED.{escapedColumnName} AS {escapedName}");
+                    if (!string.Equals(property.ColumnName, property.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        sb.Append($"INSERTED.{escapedColumnName} AS {escapedName}");
+                    }
+                    else
+                    {
+                        sb.Append($"INSERTED.{escapedColumnName}");
+                    }
                 }
                 else
                 {

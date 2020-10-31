@@ -46,7 +46,7 @@ namespace Dapper.SqlGenerator.Adapters
 
             var escapedColumnName = GetColumnName(property);
             var aliasedColumnName = alias != null ? $"{alias}.{escapedColumnName}" : escapedColumnName;
-            if (escapedColumnName != escapedName && !selection.HasFlag(ColumnSelection.Write))
+            if (!string.Equals(escapedColumnName, escapedName, StringComparison.OrdinalIgnoreCase) && !selection.HasFlag(ColumnSelection.Write))
             {
                 return $"{aliasedColumnName} AS {escapedName}";
             }
