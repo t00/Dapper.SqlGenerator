@@ -23,9 +23,9 @@
           name: "Run Application Tests"
           command: dotnet test -v n --results-directory:. --collect:"Code Coverage" --test-adapter-path:. --logger:"junit;LogFilePath=..\TestResults\{assembly}.xml"
       - store_test_results:
-          path: C:\Users\circleci\project\TestResults
+          path: TestResults
       - store_artifacts:
-          path: C:\Users\circleci\project\TestResults
+          path: TestResults
    build:
      description: Build application with Release configuration
      executor: win/default
