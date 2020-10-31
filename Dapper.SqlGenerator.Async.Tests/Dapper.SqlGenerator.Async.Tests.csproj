@@ -22,4 +22,9 @@
       <EmbeddedResource Include="TestMigrations\20200101-init.sql" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="TestMigrations\20200101-init.sqliteconnection" />
+      <EmbeddedResource Include="TestMigrations\20200101-init.sqliteconnection" />
+    </ItemGroup>
+
 </Project>

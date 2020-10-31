@@ -137,11 +137,11 @@ namespace Dapper.SqlGenerator.Async
                 .Where(x => !appliedMigrations.Contains(x.Name) && (
                     string.Equals(x.Extension, options.DefaultExtension, StringComparison.OrdinalIgnoreCase)
                     || string.Equals(x.Extension, options.GetExtension?.Invoke(connection), StringComparison.OrdinalIgnoreCase)))
-                .OrderBy(x => x.Name)
-                .ThenBy(x => x.Extension == options.DefaultExtension)
-                .ToList();
+                .GroupBy(x => x.Name)
+                .ToDictionary(x => x.Key, 
+                    x => x.OrderBy(e => e.Extension == options.DefaultExtension).ToList());
 
-            foreach (var script in missing)
+            foreach (var script in missing.OrderBy(x => x.Key))
             {
                 await ApplyMigration(connection, script, generator.Adapter, options);
             }
@@ -166,17 +166,20 @@ namespace Dapper.SqlGenerator.Async
             return migrations;
         }
         
-        private static async Task ApplyMigration<TMigration>(IDbConnection connection, MigrationScript migrationScript, ISqlAdapter adapter, MigrationOptions<TMigration> options)
+        private static async Task ApplyMigration<TMigration>(IDbConnection connection, KeyValuePair<string, List<MigrationScript>> migrationScripts, ISqlAdapter adapter, MigrationOptions<TMigration> options)
             where TMigration : class, IMigration, new()
         {
-            var migration = new TMigration { Name = migrationScript.Name, Date = DateTime.UtcNow };
+            var migration = new TMigration { Name = migrationScripts.Key, Date = DateTime.UtcNow };
             var useTransaction = options.UseTransaction?.Invoke(migration, adapter) ?? true;
-            var sql = await migrationScript.GetContents();
             var trans = useTransaction ? connection.BeginTransaction() : null;
             try
             {
                 options.BeforeAction?.Invoke(migration, adapter);
-                await connection.ExecuteAsync(sql);
+                foreach (var migrationScript in migrationScripts.Value)
+                {
+                    var sql = await migrationScript.GetContents();
+                    await connection.ExecuteAsync(sql);
+                }
                 connection.Sql().HasColumnSet<TMigration>("migration_name_date", x => x.Name, x => x.Date);
                 var migrationSql = connection.Sql().Insert<TMigration>("migration_name_date");
                 await connection.ExecuteAsync(migrationSql, migration);
