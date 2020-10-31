@@ -1,7 +1,15 @@
+using System.Collections.Generic;
+
 namespace Dapper.SqlGenerator
 {
     public interface ISqlAdapter : IBaseSqlAdapter
     {
+        /// <summary>
+        /// Returns a query checking if table @table exists in the information schema
+        /// </summary>
+        /// <returns>Table exists query</returns>
+        string TableExists();
+        
         /// <summary>
         /// Prepares a SELECT query
         /// </summary>

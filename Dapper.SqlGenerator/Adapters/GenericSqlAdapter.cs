@@ -23,6 +23,11 @@ namespace Dapper.SqlGenerator.Adapters
             return $"\"{name}\"";
         }
 
+        public virtual string TableExists()
+        {
+            return "SELECT COUNT(1) FROM information_schema.tables WHERE table_name = @table";
+        }
+
         public string Select<TEntity>(ModelBuilder modelBuilder, EntityTypeBuilder<TEntity> table, string columnSet, ColumnSelection columnSelection, string whereSet, ColumnSelection whereSelection, string alias)
         {
             var sb = new StringBuilder();

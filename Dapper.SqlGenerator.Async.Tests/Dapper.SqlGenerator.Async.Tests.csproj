@@ -14,21 +14,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Dapper.SqlGenerator.Async\Dapper.SqlGenerator.Async.csproj" />
+      <ProjectReference Include="..\Dapper.SqlGenerator.Tests\Dapper.SqlGenerator.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="TestMigration.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>TestMigration.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="TestMigration.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>TestMigration.resx</DependentUpon>
-      </Compile>
+      <None Remove="TestMigrations\20200101-init.sql" />
+      <EmbeddedResource Include="TestMigrations\20200101-init.sql" />
     </ItemGroup>
 
 </Project>

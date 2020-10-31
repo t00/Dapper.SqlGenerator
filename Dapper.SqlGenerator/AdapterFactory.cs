@@ -12,6 +12,7 @@ namespace Dapper.SqlGenerator
         {
             ["sqlconnection"] = new SqlServerAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]),
             ["npgsqlconnection"] = new PostgresAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0]),
+            ["sqliteconnection"] = new SqliteAdapter(new INameConverter[] { new PluralNameConverter() }, new INameConverter[0])
         };
 
         public static Func<IDbConnection, ISqlAdapter> AdapterLookup { get; set; }

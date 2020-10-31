@@ -1,6 +1,6 @@
 namespace Dapper.SqlGenerator.Async.Migration
 {
-    public class SimpleMigrationOptions : MigrationOptions<SimpleMigration>
+    public class SimpleMigrationOptions : MigrationOptions<Migration>
     {
         
     }

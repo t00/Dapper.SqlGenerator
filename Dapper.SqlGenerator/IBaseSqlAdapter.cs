@@ -21,9 +21,10 @@ namespace Dapper.SqlGenerator
         /// Gets escaped table name
         /// </summary>
         /// <param name="table">Table entity</param>
+        /// <param name="escaped">If true, table name will be escaped</param>
         /// <typeparam name="TEntity">Table entity type</typeparam>
         /// <returns>Escaped table name</returns>
-        string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table);
+        string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table, bool escaped);
         
         /// <summary>
         /// Checks if column is included in selection

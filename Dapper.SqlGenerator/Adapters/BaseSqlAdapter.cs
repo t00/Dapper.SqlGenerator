@@ -100,7 +100,7 @@ namespace Dapper.SqlGenerator.Adapters
             return type.IsPrimitive || type.IsEnum || nonPrimitiveTypes.Contains(type);
         }
         
-        public string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table)
+        public string GetTableName<TEntity>(EntityTypeBuilder<TEntity> table, bool escaped = true)
         {
             if (table.TableName == null)
             {
@@ -113,7 +113,7 @@ namespace Dapper.SqlGenerator.Adapters
                 table.TableName = name;
             }
 
-            return EscapeTableName(table.TableName);
+            return escaped ? EscapeTableName(table.TableName) : table.TableName;
         }
 
         protected string GetColumnName(PropertyBuilder property)

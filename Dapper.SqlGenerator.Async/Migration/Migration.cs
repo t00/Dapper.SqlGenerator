@@ -2,7 +2,7 @@ using System;
 
 namespace Dapper.SqlGenerator.Async.Migration
 {
-    public class SimpleMigration : IMigration
+    public class Migration : IMigration
     {
         public string Name { get; set; }
         

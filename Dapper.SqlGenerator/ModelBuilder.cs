@@ -36,9 +36,9 @@ namespace Dapper.SqlGenerator
             return this;
         }
 
-        public string Table<TEntity>()
+        public string Table<TEntity>(bool escaped)
         {
-            return Adapter.GetTableName(EnsureEntity<TEntity>());
+            return Adapter.GetTableName(EnsureEntity<TEntity>(), escaped);
         }
         
         public ISql HasColumnSet<TEntity>(string name, Type adapter, params string[] columns)

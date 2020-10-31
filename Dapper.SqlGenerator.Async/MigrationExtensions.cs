@@ -19,15 +19,15 @@ namespace Dapper.SqlGenerator.Async
         
         public static Task InitDatabase(this IDbConnection connection, string scriptsDirectory, SimpleMigrationOptions options = null)
         {
-            return InitDatabase<SimpleMigration>(connection, scriptsDirectory, options);
+            return InitDatabase<Migration.Migration>(connection, scriptsDirectory, options);
         }
 
-        public static async Task InitDatabase<TMigration>(this IDbConnection connection, string scriptsDirectory, MigrationOptions<TMigration> options = null)
+        public static async Task<int> InitDatabase<TMigration>(this IDbConnection connection, string scriptsDirectory, MigrationOptions<TMigration> options = null)
             where TMigration: class, IMigration, new()
         {
             if (IsApplied(connection))
             {
-                return;
+                return 0;
             }
             
             await InitLock.WaitAsync();
@@ -35,7 +35,7 @@ namespace Dapper.SqlGenerator.Async
             {
                 if (IsApplied(connection))
                 {
-                    return;
+                    return 0;
                 }
 
                 // Get all script files, scripts directory can be changed based on the database provider, i.e. db.GetType()
@@ -45,12 +45,13 @@ namespace Dapper.SqlGenerator.Async
                     .Select(fileName => new MigrationScript
                     {
                         Name = Path.GetFileNameWithoutExtension(fileName).ToLower(),
-                        Extension = Path.GetExtension(fileName).ToLower(),
+                        Extension = Path.GetExtension(fileName).TrimStart('.').ToLower(),
                         GetContents = () => File.ReadAllTextAsync(fileName)
                     });
             
-                await InitDatabase(connection, scripts, options);
+                var count = await InitDatabase(connection, scripts, options);
                 SetApplied(connection);
+                return count;
             }
             finally
             {
@@ -58,31 +59,34 @@ namespace Dapper.SqlGenerator.Async
             }
         }
 
-        public static Task InitDatabase(this IDbConnection connection, Assembly assembly, SimpleMigrationOptions options = null)
+        public static Task<int> InitDatabase(this IDbConnection connection, Assembly assembly, string resourceNamespace, SimpleMigrationOptions options = null)
         {
-            return InitDatabase<SimpleMigration>(connection, assembly, options);
+            return InitDatabase<Migration.Migration>(connection, assembly, resourceNamespace, options);
         }
 
-        public static async Task InitDatabase<TMigration>(this IDbConnection connection, Assembly assembly, MigrationOptions<TMigration> options = null)
+        public static async Task<int> InitDatabase<TMigration>(this IDbConnection connection, Assembly assembly, string resourceNamespace = null, MigrationOptions<TMigration> options = null)
             where TMigration: class, IMigration, new()
         {
-            if (IsApplied(connection))
+            if (IsApplied(connection) && options?.ForceApplyMissing != true)
             {
-                return;
+                return 0;
             }
             
             await InitLock.WaitAsync();
             try
             {
-                if (IsApplied(connection))
+                if (IsApplied(connection) && options?.ForceApplyMissing != true)
                 {
-                    return;
+                    return 0;
                 }
 
-                var scripts = assembly.GetManifestResourceNames().Select(resourceName => new MigrationScript
+                resourceNamespace ??= string.Empty;
+                var scripts = assembly.GetManifestResourceNames()
+                    .Where(x => x.StartsWith(resourceNamespace))
+                    .Select(resourceName => new MigrationScript
                 {
-                    Name = Path.GetFileName(resourceName),
-                    Extension = Path.GetExtension(resourceName),
+                    Name = Path.GetFileNameWithoutExtension(GetResourceName(resourceName)).ToLower(),
+                    Extension = Path.GetExtension(GetResourceName(resourceName)).ToLower().TrimStart('.'),
                     GetContents = async () =>
                     {
                         await using var stream = assembly.GetManifestResourceStream(resourceName);
@@ -96,12 +100,19 @@ namespace Dapper.SqlGenerator.Async
                     }
                 });
             
-                await InitDatabase(connection, scripts, options);
+                var count = await InitDatabase(connection, scripts, options);
                 SetApplied(connection);
+                return count;
             }
             finally
             {
                 InitLock.Release();
+            }
+            
+            string GetResourceName(string name)
+            {
+                name = name.Substring(resourceNamespace.Length);
+                return name.TrimStart('.');
             }
         }
 
@@ -115,31 +126,35 @@ namespace Dapper.SqlGenerator.Async
             Applied.Add((connection.GetType(), connection.ConnectionString));
         }
 
-        private static async Task InitDatabase<TMigration>(this IDbConnection connection, IEnumerable<MigrationScript> scripts, MigrationOptions<TMigration> options = null)
+        private static async Task<int> InitDatabase<TMigration>(this IDbConnection connection, IEnumerable<MigrationScript> scripts, MigrationOptions<TMigration> options = null)
             where TMigration: class, IMigration, new()
         {
             options ??= new MigrationOptions<TMigration>();
-            var adapter = connection.Sql().Adapter;
-            var migrationsSql = options.CheckHasMigrationsSql?.Invoke(adapter);
-            var appliedMigrations = await GetAppliedMigrations<TMigration>(connection, migrationsSql);
+            var generator = connection.Sql();
+            var appliedMigrations = await GetAppliedMigrations<TMigration>(connection, generator);
 
             var missing = scripts
                 .Where(x => !appliedMigrations.Contains(x.Name) && (
                     string.Equals(x.Extension, options.DefaultExtension, StringComparison.OrdinalIgnoreCase)
                     || string.Equals(x.Extension, options.GetExtension?.Invoke(connection), StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(x => x.Name)
-                .ThenBy(x => x.Extension == options.DefaultExtension);
+                .ThenBy(x => x.Extension == options.DefaultExtension)
+                .ToList();
 
             foreach (var script in missing)
             {
-                await ApplyMigration(connection, script, adapter, options);
+                await ApplyMigration(connection, script, generator.Adapter, options);
             }
+
+            return missing.Count;
         }
 
-        private static async Task<ICollection<string>> GetAppliedMigrations<TMigration>(IDbConnection connection, string migrationsSql)
+        private static async Task<ICollection<string>> GetAppliedMigrations<TMigration>(IDbConnection connection, ISql generator)
             where TMigration : IMigration
         {
-            var count = migrationsSql == null ? 0 : await connection.ExecuteScalarAsync<int>(migrationsSql, new { table = "migrations" });
+            var migrationsSql = generator.Adapter.TableExists();
+            var tableName = generator.Table<TMigration>(false);
+            var count = migrationsSql == null ? 0 : await connection.ExecuteScalarAsync<int>(migrationsSql, new { table = tableName });
             var migrations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (count > 0)
             {

@@ -14,9 +14,10 @@ namespace Dapper.SqlGenerator
         /// <summary>
         /// Gets the escaped table name 
         /// </summary>
+        /// <param name="escaped">If true, table name will be escaped for querying</param>
         /// <typeparam name="TEntity">Table type</typeparam>
         /// <returns>SQL column name</returns>
-        string Table<TEntity>();
+        string Table<TEntity>(bool escaped = true);
 
         ISql HasColumnSet<TEntity>(string name, Type adapter, params string[] columns);
         
