@@ -24,7 +24,7 @@ namespace Dapper.SqlGenerator.Adapters
             var keyColumns = modelBuilder.GetProperties<TEntity>(ColumnSelection.Keys);
             if (keyColumns.Count != 1)
             {
-                throw new InvalidOperationException("Only 1 key column supported");
+                throw new InvalidOperationException("Only one key column supported");
             }
 
             sb.Append(modelBuilder.Adapter.EscapeColumnName(keyColumns[0].Name));

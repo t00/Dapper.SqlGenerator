@@ -58,7 +58,7 @@ namespace Dapper.SqlGenerator.Adapters
                 if (property.ColumnName != null)
                 {
                     var escapedColumnName = EscapeColumnName(property.ColumnName);
-                    if (!string.Equals(property.ColumnName, property.Name, StringComparison.OrdinalIgnoreCase))
+                    if (!string.Equals(property.ColumnName, property.Name, MappingComparison))
                     {
                         sb.Append($"INSERTED.{escapedColumnName} AS {escapedName}");
                     }

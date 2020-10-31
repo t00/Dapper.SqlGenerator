@@ -11,6 +11,8 @@ namespace Dapper.SqlGenerator.Adapters
         private readonly INameConverter[] columnNameConverters;
         private readonly ICollection<Type> nonPrimitiveTypes;
 
+        public StringComparison MappingComparison { get; protected set; } = StringComparison.OrdinalIgnoreCase;
+        
         protected BaseSqlAdapter(INameConverter[] tableNameConverters, INameConverter[] columnNameConverters, IEnumerable<Type> nonPrimitiveTypes = null)
         {
             this.tableNameConverters = tableNameConverters;
@@ -46,7 +48,7 @@ namespace Dapper.SqlGenerator.Adapters
 
             var escapedColumnName = GetColumnName(property);
             var aliasedColumnName = alias != null ? $"{alias}.{escapedColumnName}" : escapedColumnName;
-            if (!string.Equals(escapedColumnName, escapedName, StringComparison.OrdinalIgnoreCase) && !selection.HasFlag(ColumnSelection.Write))
+            if (!string.Equals(escapedColumnName, escapedName, MappingComparison) && !selection.HasFlag(ColumnSelection.Write))
             {
                 return $"{aliasedColumnName} AS {escapedName}";
             }

@@ -1,22 +1,22 @@
 CREATE TABLE Migrations (Name TEXT, Date TEXT);
 
 CREATE TABLE TestProducts (
-  "id" INT PRIMARY KEY,
-  "Type" INT NOT NULL,
+  "Id" INTEGER PRIMARY KEY,
+  "Type" INTEGER NOT NULL,
   "Name" TEXT NULL,
   "Content" TEXT NOT NULL,
-  "Value" INT NOT NULL,
+  "Value" INTEGER NOT NULL,
   "Enum" TEXT NULL,
   "MaybeDate" TEXT NULL,
   "Date" TEXT NOT NULL,
   "MaybeGuid" BLOB NULL,
   "Guid" BLOB NULL,
   "Duration" TEXT NULL,
-  "Last" INT NOT NULL
+  "Last" INTEGER NOT NULL
 );
 
 CREATE TABLE TestOrders (
-  "OrderId" INT PRIMARY KEY NOT NULL,
-  "ProductId" INT NOT NULL,
-  "Count" INT NOT NULL
+  "OrderId" INTEGER PRIMARY KEY,
+  "ProductId" INTEGER NOT NULL,
+  "Count" INTEGER NOT NULL
 );
