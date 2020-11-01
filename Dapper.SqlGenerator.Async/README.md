@@ -2,7 +2,7 @@
 
 Note: Documentation is not complete, check unit tests for more examples.
 
-## Usage - Select
+## Usage - SELECT
 
 All typed Dapper Query variants are available, some examples for SELECT queries:
 
