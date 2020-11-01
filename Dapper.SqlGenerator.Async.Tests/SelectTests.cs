@@ -1,11 +1,6 @@
 using System;
-using System.Data;
-using System.Data.SQLite;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Dapper.SqlGenerator.Async.Migration;
-using Dapper.SqlGenerator.Extensions;
 using Dapper.SqlGenerator.Tests.TestClasses;
 using NUnit.Framework;
 

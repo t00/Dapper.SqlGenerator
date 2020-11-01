@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <Title>Database agnostic INSERT, UPDATE, DELETE, MERGE operations and a database migration for Dapper without POCO attributes</Title>
+        <Title>Dapper database agnostic SELECT, INSERT, UPDATE, DELETE, MERGE operations and a file or resource database migration tool</Title>
         <Authors>Michal Turecki</Authors>
         <Description>Runs Dapper queries using SqlGenerator for generating and caching SQL, does not have any dependencies other than Dapper and generates modern SQL depending on a connection type while being fully customizable  </Description>
         <PackageProjectUrl>https://github.com/t00/Dapper.SqlGenerator</PackageProjectUrl>
@@ -14,6 +14,10 @@
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.0.35" />
     </ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Dapper.SqlGenerator\Dapper.SqlGenerator.csproj" />

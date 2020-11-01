@@ -13,7 +13,7 @@ namespace Dapper.SqlGenerator.Async.Tests
         [Test]
         public async Task TestMigrateSqliteOnce()
         {
-            var connectionString = "Data Source=:memory:;Version=3;New=True;";
+            var connectionString = "Data Source=:memory:";
             await using var connection = new SQLiteConnection(connectionString);
             ProductOrderInit.Init(connectionString);
             connection.Open();
