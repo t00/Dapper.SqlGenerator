@@ -4,7 +4,7 @@ Note: Documentation is not complete, check unit tests for more examples.
 
 One of the project aims is performance - generated queries are cached as well as sets of columns.
 
-Currently only NpgsqlConnection and SqlConnection are supported but writing a custom adapter is very simple and requires only implementing ISqlAdapter interface and registering it.
+Currently only NpgsqlConnection, SqlConnection and SqliteConnection are supported but writing a custom adapter is very simple and requires only implementing ISqlAdapter interface and registering it.
 
 The Id column by default is assumed to be a key as it is rarely a case when generic Id property is not a key.
 
