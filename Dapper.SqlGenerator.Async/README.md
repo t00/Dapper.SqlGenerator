@@ -51,9 +51,9 @@ For example having folloging scripts:
     20200101-init-database.sql
     20200101-init-database.sqliteconnection
  
- - on SqliteConnection .sqliteconnection will execute first and .sql second, both in a same transaction
- - on any other connectionn, only .sql will execute
- - only one migration '20200101-init-database' will be added to the database when migration completed successfully
+ - on SqliteConnection .sqliteconnection will execute first and .sql second, both in the same transaction
+ - on any other connection type only .sql will execute
+ - only one migration '20200101-init-database' will be added to the database when migration finished successfully
 
 Example to prepare a database migration from scripts embedded as resources in MigrationResources namespace, for Sqlite:
 
