@@ -1,3 +1,7 @@
+# Dapper.SqlGenerator.Async
+
+Note: Documentation is not complete, check unit tests for more examples.
+
 ## Dapper.SqlGenerator.Async Usage - Select
 
 All typed Dapper Query variants are available, some examples for SELECT queries:
