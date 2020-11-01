@@ -14,7 +14,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Dapper.SqlGenerator.Async\Dapper.SqlGenerator.Async.csproj" />
-      <ProjectReference Include="..\Dapper.SqlGenerator.Tests\Dapper.SqlGenerator.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,6 +24,18 @@
     <ItemGroup>
       <None Remove="TestMigrations\20200101-init.sqliteconnection" />
       <EmbeddedResource Include="TestMigrations\20200101-init.sqliteconnection" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\Dapper.SqlGenerator.Tests\TestClasses\ProductOrderInit.cs">
+        <Link>TestClasses\ProductOrderInit.cs</Link>
+      </Compile>
+      <Compile Include="..\Dapper.SqlGenerator.Tests\TestClasses\TestOrder.cs">
+        <Link>TestClasses\TestOrder.cs</Link>
+      </Compile>
+      <Compile Include="..\Dapper.SqlGenerator.Tests\TestClasses\TestProduct.cs">
+        <Link>TestClasses\TestProduct.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>
