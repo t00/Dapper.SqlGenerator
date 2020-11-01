@@ -38,7 +38,7 @@ Simplest use case does not require any initialization - use the following method
     
 Using merge (also called upsert) needs a defined set of columns by which row uniqueness is determined:
 
-    DapperSqlGenerator.Configure().Entity<Order>.HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
+    connection.Sql().HasColumnSet("unique_order", x => x.OrderId, x => x.ProductId);
     string upsertMergeSql = connection.Sql().Merge<Order>("unique_order");
 
 Column sets can be used to narrow down the list of inserted or updated columns as well:
