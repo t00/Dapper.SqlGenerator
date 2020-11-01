@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.0.35" />
+      <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Dapper.SqlGenerator" Version="1.1.0" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -20,7 +21,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dapper.SqlGenerator\Dapper.SqlGenerator.csproj" />
+      <ProjectReference Condition="'$(Configuration)' != 'Release'" Include="..\Dapper.SqlGenerator\Dapper.SqlGenerator.csproj" />
     </ItemGroup>
 
 </Project>
