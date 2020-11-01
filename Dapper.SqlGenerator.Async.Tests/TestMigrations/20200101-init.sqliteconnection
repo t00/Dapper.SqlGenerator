@@ -10,7 +10,8 @@ CREATE TABLE TestProducts (
   "MaybeGuid" BLOB NULL,
   "Guid" BLOB NULL,
   "Duration" TEXT NULL,
-  "Last" INTEGER NOT NULL
+  "Last" INTEGER NOT NULL,
+  UNIQUE("Type", "Content")
 );
 
 CREATE TABLE TestOrders (

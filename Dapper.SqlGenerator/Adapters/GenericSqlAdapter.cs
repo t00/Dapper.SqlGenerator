@@ -88,9 +88,7 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(" ON CONFLICT(");
             sb.Append(modelBuilder.GetColumns<TEntity>(mergeSet, mergeSelection));
             sb.Append(") DO ");
-            sb.Append("UPDATE ");
-            sb.Append(GetTableName(table));
-            sb.Append(" SET ");
+            sb.Append("UPDATE SET ");
             sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(columnSet, ColumnSelection.NonKeys | ColumnSelection.Write));
             sb.Append(" WHERE ");
             sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(mergeSet, mergeSelection, null, " AND "));

@@ -8,23 +8,11 @@
     <PackageProjectUrl>https://github.com/t00/Dapper.SqlGenerator</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/t00/Dapper.SqlGenerator</RepositoryUrl>
-    <PackageVersion>1.0.7</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove=".circleci\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove=".circleci\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove=".circleci\**" />
-  </ItemGroup>
 
 </Project>

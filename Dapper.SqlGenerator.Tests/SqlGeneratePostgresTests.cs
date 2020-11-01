@@ -184,7 +184,7 @@ namespace Dapper.SqlGenerator.Tests
         {
             var connection = new NpgsqlConnection();
             var cols = connection.Sql().Merge<TestOrder>("unique_order");
-            Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count) ON CONFLICT(\"Id\",\"ProductId\") DO UPDATE \"orders\" SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId AND \"ProductId\"=@ProductId", cols);
+            Assert.AreEqual("INSERT INTO \"orders\" (\"ProductId\",\"Count\") VALUES (@ProductId,@Count) ON CONFLICT(\"Id\",\"ProductId\") DO UPDATE SET \"ProductId\"=@ProductId,\"Count\"=@Count WHERE \"Id\"=@OrderId AND \"ProductId\"=@ProductId", cols);
         }
         
         [Test]

@@ -83,6 +83,53 @@ namespace Dapper.SqlGenerator.Async.Tests
            
             var products = (await connection.SelectAsync<TestProduct>()).ToList();
             Assert.AreEqual(1, products.Count);
+        }
+        
+        [Test]
+        public async Task TestMerge()
+        {
+            var data = new QueryTestData();
+            var connection = await data.SetUp();
+            
+            var p3Conflicted = new TestProduct
+            {
+                Kind = 5,
+                Content = "Empty box",
+                Value = 666,
+                Date = DateTime.UtcNow,
+                Last = true
+            };
+            
+            connection.Sql().HasColumnSet<TestProduct>("kind+content", x => x.Kind, x => x.Content);
+            connection.Sql().HasColumnSet<TestProduct>("kind+content+value+date+last", x => x.Kind, x => x.Content, x => x.Value, x => x.Date, x => x.Last);
+            var rows3 = await connection.MergeAsync(p3Conflicted, "kind+content", "kind+content+value+date+last");
+            Assert.AreEqual(1, rows3);
+           
+            var product3 = (await connection.SelectWhereAsync<TestProduct>("WHERE Content = 'Empty box'")).Single();
+            Assert.IsTrue(product3.Id == data.Id1);
+            Assert.AreEqual(5, product3.Kind);
+            Assert.AreEqual("Empty box", product3.Content);
+            Assert.AreEqual(666, product3.Value);
+            Assert.AreEqual(true, product3.Last);
+
+            var p4New = new TestProduct
+            {
+                Kind = 6,
+                Content = "Empty box",
+                Value = 777,
+                Date = DateTime.UtcNow,
+                Last = true
+            };
+            
+            var rows4 = await connection.MergeAsync(p4New, "kind+content", "kind+content+value+date+last");
+            Assert.AreEqual(1, rows4);
+           
+            var product4 = (await connection.SelectWhereAsync<TestProduct>("WHERE Kind = 6")).Single();
+            Assert.IsTrue(product4.Id != data.Id1);
+            Assert.AreEqual(6, product4.Kind);
+            Assert.AreEqual("Empty box", product4.Content);
+            Assert.AreEqual(777, product4.Value);
+            Assert.AreEqual(true, product4.Last);
         }         
     }
 }
