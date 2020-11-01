@@ -44,7 +44,7 @@ All typed Dapper Query variants are available, some examples for SELECT queries:
 
 ## Usage - Migrations
 
-Resources (or files) containing SQL scripts must have an extension which is either "sql" (can be changed using options) or the name of ISqlAdapter class, lowercase i.e. "npgsqlconnection". Resource name should be prepared for correct ordering when applying migrations.
+Resources (or files) containing SQL scripts must have an extension which is either "sql" (can be changed using options) or a lowercase name of the IDbConnection class i.e. "npgsqlconnection". Resource name should be prepared for correct ordering when applying migrations.
 
 For example having folloging scripts:
 
