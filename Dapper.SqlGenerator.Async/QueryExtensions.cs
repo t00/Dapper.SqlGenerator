@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -7,73 +6,57 @@ namespace Dapper.SqlGenerator.Async
     public static class QueryExtensions
     {
         /// <summary>
-        /// Execute a SELECT query asynchronously using Task.
+        /// Execute the INSERT expression on the given table
         /// </summary>
-        /// <typeparam name="T">The type of results to return.</typeparam>
-        /// <param name="cnn">The connection to query on.</param>
-        /// <param name="param">The parameters to pass, if any.</param>
-        /// <param name="columnSet">Set of columns to select</param>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="connection">The connection to query on.</param>
+        /// <param name="entityToInsert">The object to INSERT.</param>
+        /// <param name="columnSet">Set of columns to update</param>
+        /// <param name="insertKeys">If true, keys will also be inserted.</param>
         /// <param name="transaction">The transaction to use, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
-        /// <param name="commandType">The type of command to execute.</param>
-        /// <returns>
-        /// A sequence of data of <typeparamref name="T"/>; if a basic type (int, string, etc) is queried then the data from the first column in assumed, otherwise an instance is
-        /// created per row, and a direct column-name===member-name mapping is assumed (case insensitive).
-        /// </returns>
-        public static Task<IEnumerable<T>> SelectAsync<T>(this IDbConnection cnn, object param = null, string columnSet = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
-            cnn.QueryAsync<T>(cnn.Sql().Select<T>(columnSet), param, transaction, commandTimeout, commandType);
-
+        /// <returns>Task executing UPDATE returning number of rows affected</returns>
+        public static Task<int> InsertAsync<T>(this IDbConnection connection, T entityToInsert, string columnSet = null, bool insertKeys = false, IDbTransaction transaction = null, int? commandTimeout = null)
+            =>  connection.ExecuteAsync(connection.Sql().Insert<T>(columnSet, insertKeys), entityToInsert, transaction, commandTimeout);
+        
         /// <summary>
-        /// Execute a single-row SELECT query asynchronously using Task.
+        /// Execute the INSERT expression on the given table
+        /// RETURNING values of the keys defined for this table
         /// </summary>
-        /// <typeparam name="T">The type of result to return.</typeparam>
-        /// <param name="cnn">The connection to query on.</param>
-        /// <param name="param">The parameters to pass, if any.</param>
-        /// <param name="columnSet">Set of columns to select</param>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="connection">The connection to query on.</param>
+        /// <param name="entityToInsert">The object to INSERT.</param>
+        /// <param name="columnSet">Set of columns to update</param>
+        /// <param name="insertKeys">If true, keys will also be inserted.</param>
         /// <param name="transaction">The transaction to use, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
-        /// <param name="commandType">The type of command to execute.</param>
-        public static Task<T> SelectFirstAsync<T>(this IDbConnection cnn, object param = null, string columnSet = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
-            cnn.QueryFirstAsync<T>(cnn.Sql().SelectSingle<T>(columnSet), param, transaction, commandTimeout, commandType);
-
+        /// <returns>Task executing INSERT returning object with inserted keys</returns>
+        public static Task<T> InsertReturnAsync<T>(this IDbConnection connection, T entityToInsert, string columnSet = null, bool insertKeys = false, IDbTransaction transaction = null, int? commandTimeout = null)
+            =>  connection.QuerySingleOrDefaultAsync<T>(connection.Sql().InsertReturn<T>(columnSet, insertKeys), entityToInsert, transaction, commandTimeout);
+        
         /// <summary>
-        /// Execute a single-row SELECT query asynchronously using Task.
+        /// Execute the UPDATE expression from the given table of records identified by keys 
         /// </summary>
-        /// <typeparam name="T">The type of result to return.</typeparam>
-        /// <param name="cnn">The connection to query on.</param>
-        /// <param name="param">The parameters to pass, if any.</param>
-        /// <param name="columnSet">Set of columns to select</param>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="connection">The connection to query on.</param>
+        /// <param name="entityToUpdate">The object to UPDATE containing all keys to filter on.</param>
+        /// <param name="columnSet">Set of columns to update</param>
         /// <param name="transaction">The transaction to use, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
-        /// <param name="commandType">The type of command to execute.</param>
-        public static Task<T> SelectFirstOrDefaultAsync<T>(this IDbConnection cnn, object param = null, string columnSet = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
-            cnn.QueryFirstOrDefaultAsync<T>(cnn.Sql().SelectSingle<T>(columnSet), param, transaction, commandTimeout, commandType);
-
+        /// <returns>Task executing UPDATE returning number of rows affected</returns>
+        public static Task<int> UpdateAsync<T>(this IDbConnection connection, T entityToUpdate, string columnSet = null, IDbTransaction transaction = null, int? commandTimeout = null)
+            =>  connection.ExecuteAsync(connection.Sql().Update<T>(columnSet), entityToUpdate, transaction, commandTimeout);
+        
         /// <summary>
-        /// Execute a single-row SELECT query asynchronously using Task.
+        /// Execute the DELETE expression from the given table of records identified by keys 
         /// </summary>
-        /// <typeparam name="T">The type of result to return.</typeparam>
-        /// <param name="cnn">The connection to query on.</param>
-        /// <param name="param">The parameters to pass, if any.</param>
-        /// <param name="columnSet">Set of columns to select</param>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="connection">The connection to query on.</param>
+        /// <param name="entityToDelete">The object to DELETE containing all keys to filter on.</param>
         /// <param name="transaction">The transaction to use, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
-        /// <param name="commandType">The type of command to execute.</param>
-        public static Task<T> SelectSingleAsync<T>(this IDbConnection cnn, object param = null, string columnSet = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
-            cnn.QuerySingleAsync<T>(cnn.Sql().SelectSingle<T>(columnSet), param, transaction, commandTimeout, commandType);
-
-        /// <summary>
-        /// Execute a single-row SELECT query asynchronously using Task.
-        /// </summary>
-        /// <typeparam name="T">The type to return.</typeparam>
-        /// <param name="cnn">The connection to query on.</param>
-        /// <param name="sql">The SQL to execute for the query.</param>
-        /// <param name="param">The parameters to pass, if any.</param>
-        /// <param name="columnSet">Set of columns to select</param>
-        /// <param name="transaction">The transaction to use, if any.</param>
-        /// <param name="commandTimeout">The command timeout (in seconds).</param>
-        /// <param name="commandType">The type of command to execute.</param>
-        public static Task<T> SelectSingleOrDefaultAsync<T>(this IDbConnection cnn, string sql, object param = null, string columnSet = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null) =>
-            cnn.QuerySingleOrDefaultAsync<T>(cnn.Sql().SelectSingle<T>(columnSet), param, transaction, commandTimeout, commandType);
+        /// <returns>Task executing DELETE returning number of rows affected</returns>
+        public static Task<int> DeleteAsync<T>(this IDbConnection connection, T entityToDelete, IDbTransaction transaction = null, int? commandTimeout = null)
+            =>  connection.ExecuteAsync(connection.Sql().Delete<T>(), entityToDelete, transaction, commandTimeout);
     }
 }
