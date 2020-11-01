@@ -1,6 +1,6 @@
 ## Dapper.SqlGenerator.Async Usage - Select
 
-All typed Dapper Query variants are available, some example SELECT queries:
+All typed Dapper Query variants are available, some examples for SELECT queries:
 
     using Dapper.SqlGenerator.Async;
 
@@ -36,14 +36,14 @@ All typed Dapper Query variants are available, some example SELECT queries:
     // Content column is considered unique
     connection.Sql().HasColumnSet<Product>("content", x => x.Content);
     connection.Sql().HasColumnSet<Product>("id+kind+content+value", x => x.Id, x => x.Kind, x => x.Content, x => x.Value);
-    var affectedInsertOrUpdateRows = await connection.MergeAsync(new Product { Kind = 7, Content = "Triangle", Value = 123 }, "content", "id+kind+content+value");
+    var affectedInsertOrUpdateRows = await connection.MergeAsync(new Product { Kind = 8, Content = "Triangle", Value = 123 }, "content", "id+kind+content+value");
 
 
     
 
 ## Dapper.SqlGenerator.Async Usage - Migrations
 
-Resources containing SQL scripts must have an extension which is either "sql" (can be changed using options) or the name of ISqlAdapter class, lowercase i.e. "npgsqlconnection". Resource name should be prepared for correct ordering when applying migrations.
+Resources (or files) containing SQL scripts must have an extension which is either "sql" (can be changed using options) or the name of ISqlAdapter class, lowercase i.e. "npgsqlconnection". Resource name should be prepared for correct ordering when applying migrations.
 
 For example having folloging scripts:
 
