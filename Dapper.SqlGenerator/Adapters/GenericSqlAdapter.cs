@@ -43,8 +43,12 @@ namespace Dapper.SqlGenerator.Adapters
 
             if (whereSelection != ColumnSelection.None)
             {
-                sb.Append(" WHERE ");
-                sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(whereSet, whereSelection, alias, " AND "));
+                var where = modelBuilder.GetColumnEqualParams<TEntity>(whereSet, whereSelection, alias, " AND ");
+                if (!string.IsNullOrWhiteSpace(where))
+                {
+                    sb.Append(" WHERE ");
+                    sb.Append(modelBuilder.GetColumnEqualParams<TEntity>(whereSet, whereSelection, alias, " AND "));
+                }
             }
 
             return sb.ToString();
@@ -61,8 +65,13 @@ namespace Dapper.SqlGenerator.Adapters
         {
             var sb = new StringBuilder();
             AddInsert(sb, modelBuilder, table, insertKeys, columnSet);
-            sb.Append(" RETURNING ");
-            sb.Append(modelBuilder.GetColumns<TEntity>(null, ColumnSelection.Keys));
+            var keys = modelBuilder.GetColumns<TEntity>(null, ColumnSelection.Keys);
+            if (!string.IsNullOrWhiteSpace(keys))
+            {
+                sb.Append(" RETURNING ");
+                sb.Append(modelBuilder.GetColumns<TEntity>(null, ColumnSelection.Keys));
+            }
+
             return sb.ToString();
         }
 

@@ -40,7 +40,19 @@ namespace Dapper.SqlGenerator.Async.Tests
         public async Task TestInsertReturn()
         {
             var data = new QueryTestData();
-            var _ = await data.SetUp();
+            var connection = await data.SetUp();
+            
+            var p3 = new TestProduct
+            {
+                Kind = 3,
+                Content = "Reboot",
+                Value = 5,
+                Date = DateTime.UtcNow,
+                MaybeDate = DateTime.UtcNow,
+                Last = false
+            };
+            var id = await connection.InsertReturnScalarAsync<int, TestProduct>(p3);
+            Assert.IsTrue(id > 0);
         }
         
         [Test]
@@ -83,6 +95,12 @@ namespace Dapper.SqlGenerator.Async.Tests
            
             var products = (await connection.SelectAsync<TestProduct>()).ToList();
             Assert.AreEqual(1, products.Count);
+
+            rows = await connection.DeleteAsync<TestProduct>(new { Id = data.Id1 });
+            Assert.AreEqual(1, rows);
+            
+            products = (await connection.SelectAsync<TestProduct>()).ToList();
+            Assert.AreEqual(0, products.Count);
         }
         
         [Test]

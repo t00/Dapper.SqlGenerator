@@ -40,7 +40,7 @@ namespace Dapper.SqlGenerator.Adapters
             sb.Append(GetTableName(table));
             sb.Append(" (");
             sb.Append(modelBuilder.GetColumns<TEntity>(columnSet, selection));
-            sb.Append(") OUTPUT ");
+            sb.Append(")");
             var isFirst = true;
             foreach (var property in modelBuilder.GetProperties<TEntity>(ColumnSelection.Keys))
             {
@@ -50,11 +50,7 @@ namespace Dapper.SqlGenerator.Adapters
                     throw new SqlGenerationException("Computed columns cannot be returned from INSERT");
                 }
 
-                if (!isFirst)
-                {
-                    sb.Append(',');
-                }
-                
+                sb.Append(isFirst ? " OUTPUT " : ",");
                 if (property.ColumnName != null)
                 {
                     var escapedColumnName = EscapeColumnName(property.ColumnName);

@@ -33,7 +33,24 @@ namespace Dapper.SqlGenerator.Async
         /// <returns>Task executing INSERT returning object with inserted keys</returns>
         public static Task<T> InsertReturnAsync<T>(this IDbConnection connection, T entityToInsert, string columnSet = null, bool insertKeys = false, IDbTransaction transaction = null, int? commandTimeout = null)
             =>  connection.QuerySingleOrDefaultAsync<T>(connection.Sql().InsertReturn<T>(columnSet, insertKeys), entityToInsert, transaction, commandTimeout);
-        
+
+        /// <summary>
+        /// Execute the INSERT expression on the given table
+        /// RETURNING value of the first key column defined for this table
+        /// </summary>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <typeparam name="TScalar">Return type</typeparam>
+        /// <param name="connection">The connection to query on.</param>
+        /// <param name="entityToInsert">The object to INSERT.</param>
+        /// <param name="columnSet">Set of columns to update</param>
+        /// <param name="insertKeys">If true, keys will also be inserted.</param>
+        /// <param name="transaction">The transaction to use, if any.</param>
+        /// <param name="commandTimeout">The command timeout (in seconds).</param>
+        /// <returns>Task executing INSERT returning object with inserted keys</returns>
+        public static Task<TScalar> InsertReturnScalarAsync<TScalar, T>(this IDbConnection connection, T entityToInsert, string columnSet = null, bool insertKeys = false,
+            IDbTransaction transaction = null, int? commandTimeout = null)
+            => connection.ExecuteScalarAsync<TScalar>(connection.Sql().InsertReturn<T>(columnSet, insertKeys), entityToInsert, transaction, commandTimeout);
+
         /// <summary>
         /// Execute the UPDATE expression from the given table of records identified by keys 
         /// </summary>
@@ -52,12 +69,24 @@ namespace Dapper.SqlGenerator.Async
         /// </summary>
         /// <typeparam name="T">The type of entity.</typeparam>
         /// <param name="connection">The connection to query on.</param>
-        /// <param name="entityToDelete">The object to DELETE containing all keys to filter on.</param>
+        /// <param name="entityToDelete">The object containing all keys for DELETE to filter on.</param>
         /// <param name="transaction">The transaction to use, if any.</param>
         /// <param name="commandTimeout">The command timeout (in seconds).</param>
         /// <returns>Task executing DELETE returning number of rows affected</returns>
         public static Task<int> DeleteAsync<T>(this IDbConnection connection, T entityToDelete, IDbTransaction transaction = null, int? commandTimeout = null)
             =>  connection.ExecuteAsync(connection.Sql().Delete<T>(), entityToDelete, transaction, commandTimeout);
+
+        /// <summary>
+        /// Execute the DELETE expression from the given table of records identified by keys 
+        /// </summary>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="connection">The connection to query on.</param>
+        /// <param name="param">The object containing all keys for DELETE to filter on.</param>
+        /// <param name="transaction">The transaction to use, if any.</param>
+        /// <param name="commandTimeout">The command timeout (in seconds).</param>
+        /// <returns>Task executing DELETE returning number of rows affected</returns>
+        public static Task<int> DeleteAsync<T>(this IDbConnection connection, object param, IDbTransaction transaction = null, int? commandTimeout = null)
+            => connection.ExecuteAsync(connection.Sql().Delete<T>(), param, transaction, commandTimeout);
 
         /// <summary>
         /// Runs INSERT or UPDATE of records identified by a given set of columns
