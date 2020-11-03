@@ -8,12 +8,12 @@
         <PackageProjectUrl>https://github.com/t00/Dapper.SqlGenerator</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/t00/Dapper.SqlGenerator</RepositoryUrl>
-        <PackageVersion>1.1.1</PackageVersion>
+        <PackageVersion>1.1.2</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Dapper" Version="2.0.35" />
-      <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Dapper.SqlGenerator" Version="1.1.1"/>
+      <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Dapper.SqlGenerator" Version="1.1.1" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">

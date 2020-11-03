@@ -51,7 +51,7 @@ namespace Dapper.SqlGenerator.Async.Tests
                 MaybeDate = DateTime.UtcNow,
                 Last = false
             };
-            var id = await connection.InsertReturnScalarAsync<int, TestProduct>(p3);
+            var id = await connection.InsertReturnAsync<TestProduct, int>(p3);
             Assert.IsTrue(id > 0);
         }
         
