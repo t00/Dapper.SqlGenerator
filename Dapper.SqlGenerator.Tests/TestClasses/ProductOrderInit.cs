@@ -1,5 +1,6 @@
 using Dapper.SqlGenerator.Adapters;
 using Dapper.SqlGenerator.Extensions;
+using Dapper.SqlGenerator.Extensions.Dummy;
 
 namespace Dapper.SqlGenerator.Tests.TestClasses
 {

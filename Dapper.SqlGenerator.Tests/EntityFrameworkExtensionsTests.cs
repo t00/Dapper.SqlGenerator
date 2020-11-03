@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Dapper.SqlGenerator.Extensions;
+using Dapper.SqlGenerator.Extensions.Dummy;
 
 namespace Dapper.SqlGenerator.Tests
 {

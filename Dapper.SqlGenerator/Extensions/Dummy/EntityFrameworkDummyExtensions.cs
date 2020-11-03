@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Dapper.SqlGenerator.Extensions
+namespace Dapper.SqlGenerator.Extensions.Dummy
 {
     public static class EntityFrameworkDummyExtensions
     {
