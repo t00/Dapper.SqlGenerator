@@ -6,7 +6,22 @@ namespace Dapper.SqlGenerator.Extensions
 {
     public static class EntityFrameworkDummyExtensions
     {
+        public static EntityTypeBuilder<TEntity> HasNoKey<TEntity, TProperty>(this EntityTypeBuilder<TEntity> builder)
+        {
+            return builder;
+        }
+        
+        public static EntityTypeBuilder<TEntity> HasName<TEntity, TProperty>(this EntityTypeBuilder<TEntity> builder, string name)
+        {
+            return builder;
+        }
+        
         public static PropertyBuilder IsRequired(this PropertyBuilder builder)
+        {
+            return builder;
+        }
+        
+        public static PropertyBuilder ValueGeneratedOnAdd(this PropertyBuilder builder)
         {
             return builder;
         }
