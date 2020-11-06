@@ -65,3 +65,7 @@ Example to prepare a database migration from scripts embedded as resources in Mi
 
     var namespaceName = Assembly.GetExecutingAssembly().GetName().Name + ".MigrationResources";
     var noMigrationsApplied = await connection.InitDatabase(Assembly.GetExecutingAssembly(), namespaceName);
+
+First migration script should, among other structures, create migrations table, for a default Migration class it might look like below:
+
+    CREATE TABLE Migrations (Name VARCHAR(44), Date DATE);
