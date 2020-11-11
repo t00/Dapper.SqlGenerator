@@ -20,7 +20,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Test
-      run: dotnet test -v n --results-directory:. --collect:"Code Coverage" --test-adapter-path:. --logger:"junit;LogFilePath=..\TestResults\{assembly}.xml"
+      run: dotnet test -v n --results-directory:. --test-adapter-path:. --logger:"nunit;LogFilePath=..\TestResults\{assembly}.xml"
     - name: Report Tests
       uses: MirrorNG/nunit-reporter@v1.0.11
       if: always()
