@@ -20,5 +20,9 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Test
-      run: dotnet test --no-restore --logger GitHubActions
-
+      run: dotnet test --no-restore --logger:nunit
+    - uses: ./
+      if: always()
+      with:
+        path: '**/TestResults/*.xml'
+        access-token: ${{secrets.GITHUB_TOKEN}}
