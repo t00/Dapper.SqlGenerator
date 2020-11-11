@@ -21,7 +21,7 @@ jobs:
       run: dotnet build --configuration Release
     - name: Test
       run: dotnet test -v n --results-directory:. --collect:"Code Coverage" --test-adapter-path:. --logger:"junit;LogFilePath=..\TestResults\{assembly}\TestResults.xml"
-    - uses: ./
+    - uses: MirrorNG/nunit-reporter@v1.0.11
       if: always()
       with:
         path: 'TestResults/**/*.xml'
