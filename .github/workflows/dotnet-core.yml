@@ -20,9 +20,9 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Test
-      run: dotnet test --no-restore --logger:nunit
+      run: dotnet test -v n --results-directory:. --collect:"Code Coverage" --test-adapter-path:. --logger:"junit;LogFilePath=..\TestResults\{assembly}\TestResults.xml"
     - uses: ./
       if: always()
       with:
-        path: '**/TestResults/*.xml'
+        path: 'TestResults/**/*.xml'
         access-token: ${{secrets.GITHUB_TOKEN}}
