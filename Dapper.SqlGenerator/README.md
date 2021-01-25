@@ -76,11 +76,11 @@ Example for 2 entities:
 
 SqlGenerator can pick the correct database adapter based on the IDbConnection type or even optionally by it's connection string to handle selection of schema.
 
-Project will aim to eventually be fully compatible with Entity Framework Core schema definition. To crate mappings for an existing database use the following command:
+Project will aim to eventually be fully compatible with Entity Framework Core schema definition. To create mappings for an existing database use the following command:
 
     dotnet ef dbcontext scaffold "Server=.\SQLEXPRESS;Database=MyDb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
 
-In the generated schema definitions remove Entity Framework namespaces and initialize SqlGenerator with generated schema:
+In the generated schema definitions remove Entity Framework namespaces and initialize SqlGenerator with the generated schema:
 
     using Dapper.SqlGenerator;
     using Dapper.SqlGenerator.Extensions;
